@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtool-api-jobs
+  labels:
+    app: VirtoolApiJobs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: VirtoolApiJobs
+  template:
+    metadata:
+      labels:
+        app: VirtoolApiJobs
+    spec:
+      restartPolicy: Always
+      containers:
+        - image: ghcr.io/virtool/virtool:13.6.0
+          imagePullPolicy: Always
+          name: virtool-api-jobs
+          command: ["python", "run.py", "jobsAPI", "--host=0.0.0.0"]
+          env:
+            - name: VT_DATA_PATH
+              value: "/data"
+            - name: VT_DB_CONNECTION_STRING
+              value: "mongodb://virtool:virtool@mongo-mongodb-0.mongo-mongodb-headless.default.svc.cluster.local/virtool"
+            - name: VT_DB_NAME
+              value: "virtool"
+            - name: VT_OPENFGA_SCHEME
+              value: "http"
+            - name: VT_OPENFGA_HOST
+              value: "openfga.default.svc.cluster.local"
+            - name: VT_SERVER_HOST
+              value: "0.0.0.0"
+            - name: VT_REDIS_CONNECTION_STRING
+              value: "redis://:virtool@redis-master.default.svc.cluster.local"
+            - name: VT_POSTGRES_CONNECTION_STRING
+              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+          ports:
+            - containerPort: 9950
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+            requests:
+              cpu: 600m
+              memory: 1Gi
+          volumeMounts:
+          - name: data
+            mountPath: /data
+      volumes:
+      - name: data
+        nfs:
+            server: 10.109.28.120
+            path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobs-api
+spec:
+  type: ClusterIP
+  selector:
+    app: VirtoolApiJobs
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9950
+

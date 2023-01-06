@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtool-ui
+  labels:
+    app: VirtoolUI
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: VirtoolUI
+  template:
+    metadata:
+      labels:
+        app: VirtoolUI
+    spec:
+      containers:
+        - image: ghcr.io/virtool/ui:3.4.0
+          imagePullPolicy: Always
+          name: virtool-ui
+          command: ["node", "run.js"]
+          env:
+            - name: VT_UI_PORT
+              value: "9900"
+            - name: VT_UI_HOST
+              value: "0.0.0.0"
+            - name: VT_UI_API_URL
+              value: "https://localhost:9900/api"
+          ports:
+            - containerPort: 9900
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 800m
+              memory: 2Gi
+            requests:
+              cpu: 200m
+              memory: 1Gi
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui-service
+spec:
+  type: ClusterIP
+  selector:
+    app: VirtoolUI
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9900

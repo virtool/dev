@@ -1,0 +1,9 @@
+architecture: replicaset
+auth:
+  replicaSetKey: virtool
+  passwords:
+    - virtool
+  usernames:
+    - virtool
+  databases:
+    - virtool

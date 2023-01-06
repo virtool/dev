@@ -1,0 +1,48 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: virtool-job-pathoscope
+spec:
+  jobTargetRef:
+    backoffLimit: 1
+    completions: 1
+    parallelism: 1
+    ttlSecondsAfterFinished: 300
+    template:
+      metadata:
+        annotations:
+          cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+        labels:
+          app: job-pathoscope
+      spec:
+        containers:
+          - name: job-pathoscope
+            image: ghcr.io/virtool/pathoscope:5.0.0
+            imagePullPolicy: Always
+            command: [run-workflow]
+            envFrom:
+              - configMapRef:
+                  name: virtool-jobs-config
+            env:
+              - name: VT_MEM
+                value: "8"
+              - name: VT_PROC
+                value: "4"
+              - name: VT_REDIS_LIST_NAME
+                value: "jobs_pathoscope_bowtie"
+            resources:
+              limits:
+                cpu: "5"
+                memory: 10Gi
+              requests:
+                cpu: "5"
+                memory: 10Gi
+  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 3
+  triggers:
+    - type: redis
+      metadata:
+        addressFromEnv: VT_REDIS_HOST
+        passwordFromEnv: VT_REDIS_PASSWORD
+        listName: jobs_pathoscope_bowtie
+        listLength: "1"
