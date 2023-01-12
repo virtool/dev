@@ -48,7 +48,7 @@ if 'ui' in to_edit:
     docker_build(
       'ghcr.io/virtool/ui',
       '../virtool-ui/',
-      entrypoint='npx webpack-dev-server',
+      entrypoint='npx vite serve --host 0.0.0.0 --port 9900',
       target='dev',
       live_update=[
         fall_back_on(['../virtool-ui/package.json', '../virtool-ui/package-lock.json']),
