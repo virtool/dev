@@ -15,7 +15,6 @@ spec:
     - name: udp-111
       port: 111
       protocol: UDP
-
 ---
 kind: Pod
 apiVersion: v1
@@ -24,6 +23,10 @@ metadata:
   labels:
     role: nfs
 spec:
+  volumes:
+    - name: pv-nfs-storage
+      persistentVolumeClaim:
+        claimName: pvc-nfs
   containers:
     - name: nfs-server
       image: cpuguy83/nfs-server
@@ -31,3 +34,34 @@ spec:
         privileged: true
       args:
         - /exports/virtool
+      volumeMounts:
+        - mountPath: /exports
+          name: pv-nfs-storage
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs
+  labels:
+    type: nfs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 80Gi
+  hostPath:
+    path: /var/lib/minikube/virtool_nfs
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nfs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 80Gi
+  storageClassName: ""
+  volumeName: pv-nfs
