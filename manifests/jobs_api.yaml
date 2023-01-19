@@ -25,7 +25,7 @@ spec:
               value: "/data"
             - name: VT_DB_CONNECTION_STRING
               value: "mongodb://virtool:virtool@mongo-mongodb-0.mongo-mongodb-headless.default.svc.cluster.local/virtool"
-            - name: VT_DB_NAME
+            - name: VT_DB_NAMEz
               value: "virtool"
             - name: VT_OPENFGA_SCHEME
               value: "http"

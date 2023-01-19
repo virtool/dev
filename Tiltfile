@@ -34,14 +34,22 @@ helm_resource(
     labels=['data']
 )
 
+
 helm_resource('keda', 'kedacore/keda', labels=['keda'])
 
 k8s_yaml('manifests/ingress.yaml')
+
+
 k8s_yaml('manifests/nfs.yaml')
 k8s_resource('nfs-server', labels=['data'], new_name='nfs')
 
+k8s_yaml('manifests/openfga-migration.yaml')
+k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgresql"])
 k8s_yaml('manifests/openfga.yaml')
-k8s_resource('openfga', labels=['data'])
+k8s_resource('openfga', labels=['data'], resource_deps=["openfga-migration"])
+
+k8s_yaml('manifests/migration.yaml')
+k8s_resource('virtool-migration', labels=['migration'], resource_deps=["postgresql", "mongo"])
 
 # Actual Virtool stuff.
 if 'ui' in to_edit:
@@ -62,15 +70,33 @@ k8s_resource('virtool-ui', port_forwards=[3000, 9900], labels=['virtool'])
 if 'backend' in to_edit:
     docker_build('ghcr.io/virtool/virtool', '../virtool/')
 
+api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
+
 k8s_yaml('manifests/api.yaml')
-k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'])
+k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps)
 
 k8s_yaml('manifests/jobs_api.yaml')
-k8s_resource('virtool-api-jobs', port_forwards=[9960], labels=['virtool'])
+k8s_resource('virtool-api-jobs', port_forwards=[9960], labels=['virtool'], resource_deps=api_resource_deps)
+
+
+
+
+jobs = ["shared.yaml",'build-index.yaml','create-sample.yaml' ]
 
 k8s_yaml('manifests/jobs/shared.yaml')
+k8s_resource(objects=["virtool-jobs-config"], labels=["jobs"], new_name="Shared")
+
 k8s_yaml('manifests/jobs/build-index.yaml')
+k8s_resource(objects=["virtool-job-build-index"], labels=["jobs"], new_name="build-index", resource_deps=["keda"])
+
 k8s_yaml('manifests/jobs/create-sample.yaml')
+k8s_resource(objects=["virtool-job-create-sample"], labels=["jobs"], new_name="create-sample", resource_deps=["keda"])
+
 k8s_yaml('manifests/jobs/create-subtraction.yaml')
+k8s_resource(objects=["virtool-job-create-subtraction"], labels=["jobs"], new_name="create-subraction", resource_deps=["keda"])
+
 k8s_yaml('manifests/jobs/nuvs.yaml')
+k8s_resource(objects=["virtool-job-nuvs"], labels=["jobs"], new_name="nuvs", resource_deps=["keda"])
+
 k8s_yaml('manifests/jobs/pathoscope.yaml')
+k8s_resource(objects=["virtool-job-pathoscope"], labels=["jobs"], new_name="pathoscope", resource_deps=["keda"])
