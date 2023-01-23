@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: virtool-migration
+  labels:
+    app: VirtoolMigration
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: VirtoolMigration
+    spec:
+      containers:
+        - image: ghcr.io/virtool/migration:1.6.0
+          imagePullPolicy: Always
+          name: virtool-migration
+          env:
+            - name: VT_MIGRATION_APPLY_MONGO_CONNECTION_STRING
+              value: "mongodb://virtool:virtool@mongo-mongodb-0.mongo-mongodb-headless.default.svc.cluster.local/virtool"
+            - name: SQLALCHEMY_URL
+              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+          resources:
+            limits:
+              cpu: 800m
+              memory: 2Gi
+            requests:
+              cpu: 200m
+              memory: 1Gi
+      restartPolicy: Never
+

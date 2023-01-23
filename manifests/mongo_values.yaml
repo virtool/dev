@@ -1,9 +1,16 @@
 architecture: replicaset
+replicaCount: 1
 auth:
   replicaSetKey: virtool
+  rootpassword: virtool
   passwords:
     - virtool
   usernames:
     - virtool
   databases:
     - virtool
+arbiter:
+  enabled: false
+
+
+
