@@ -31,11 +31,11 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 800m
-              memory: 2Gi
+              cpu: 2
+              memory: 3Gi
             requests:
-              cpu: 200m
-              memory: 1Gi
+              cpu: 2
+              memory: 3Gi
       restartPolicy: Always
 ---
 apiVersion: v1

@@ -1,0 +1,5 @@
+tasks:
+  - addSubtraction: 
+    taskName: add_subtraction_files
+    kubeName: add-subtraction-files
+    schedule: "*/10 * * * *

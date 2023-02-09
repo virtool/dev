@@ -37,6 +37,10 @@ spec:
               value: "redis://:virtool@redis-master.default.svc.cluster.local"
             - name: VT_POSTGRES_CONNECTION_STRING
               value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+            - name: VT_DEV
+              value: "true"
+            - name: VT_NO_TASKS
+              value: "true"
           ports:
             - containerPort: 9950
               protocol: TCP

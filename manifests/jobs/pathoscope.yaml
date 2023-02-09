@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
           - name: job-pathoscope
-            image: ghcr.io/virtool/pathoscope:5.0.0
+            image: ghcr.io/virtool/pathoscope:5.1.0
             imagePullPolicy: Always
             command: [run-workflow]
             envFrom:

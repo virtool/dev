@@ -24,14 +24,16 @@ helm_resource(
     'postgresql',
     'bitnami/postgresql',
     flags=["--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool"],
+    port_forwards=[5432],
     labels=['data']
 )
 
 helm_resource(
     'redis',
     'bitnami/redis',
-    flags=['--set', 'architecture=standalone', '--set', 'auth.password=virtool'],
-    labels=['data']
+    flags=['--set', 'architecture=standalone', '--set', 'auth.password=virtool', "--set", "master.disableCommands=null"],
+    labels=['data'],
+    port_forwards=[6379],
 )
 
 
@@ -45,8 +47,9 @@ k8s_resource('nfs-server', labels=['data'], new_name='nfs')
 
 k8s_yaml('manifests/openfga-migration.yaml')
 k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgresql"])
+
 k8s_yaml('manifests/openfga.yaml')
-k8s_resource('openfga', labels=['data'], resource_deps=["openfga-migration"])
+k8s_resource('openfga', labels=['data'], resource_deps=["openfga-migration"], port_forwards=[8080])
 
 k8s_yaml('manifests/migration.yaml')
 k8s_resource('virtool-migration', labels=['migration'], resource_deps=["postgresql", "mongo"])
@@ -76,8 +79,13 @@ k8s_yaml('manifests/api.yaml')
 k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps)
 
 k8s_yaml('manifests/jobs_api.yaml')
-k8s_resource('virtool-api-jobs', port_forwards=[9960], labels=['virtool'], resource_deps=api_resource_deps)
+k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
+k8s_yaml('manifests/tasks_runner.yaml')
+k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
+
+k8s_yaml('manifests/tasks/AddSubtractionFiles.yaml')
+k8s_resource('add-subtraction-files', resource_deps=api_resource_deps)
 
 
 
