@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
           - name: job-create-sample
-            image: virtool/create-sample:4.0.0
+            image: ghcr.io/virtool/create-sample:4.0.0
             imagePullPolicy: Always
             command: [run-workflow]
             envFrom:

@@ -87,24 +87,30 @@ k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virto
 k8s_yaml('manifests/tasks/AddSubtractionFiles.yaml')
 k8s_resource('add-subtraction-files', resource_deps=api_resource_deps)
 
+"""
+Jobs
+"""
+jobs = ['shared.yaml', 'build-index.yaml','create-sample.yaml']
 
+if 'create-sample' in to_edit:
+    docker_build('ghcr.io/virtool/create-sample', '../workflow-create-sample/')
 
-jobs = ["shared.yaml",'build-index.yaml','create-sample.yaml' ]
+k8s_kind('ScaledJob', image_json_path='{.spec.jobTargetRef.template.spec.containers[0].image}')
 
 k8s_yaml('manifests/jobs/shared.yaml')
-k8s_resource(objects=["virtool-jobs-config"], labels=["jobs"], new_name="Shared")
+k8s_resource(objects=['virtool-jobs-config'], labels=["jobs"], new_name="shared-config")
 
 k8s_yaml('manifests/jobs/build-index.yaml')
-k8s_resource(objects=["virtool-job-build-index"], labels=["jobs"], new_name="build-index", resource_deps=["keda"])
+k8s_resource("virtool-job-build-index", labels=["jobs"], new_name="build-index", resource_deps=['keda'])
 
 k8s_yaml('manifests/jobs/create-sample.yaml')
-k8s_resource(objects=["virtool-job-create-sample"], labels=["jobs"], new_name="create-sample", resource_deps=["keda"])
+k8s_resource('virtool-job-create-sample', labels=["jobs"], new_name="create-sample", resource_deps=['keda'])
 
 k8s_yaml('manifests/jobs/create-subtraction.yaml')
-k8s_resource(objects=["virtool-job-create-subtraction"], labels=["jobs"], new_name="create-subraction", resource_deps=["keda"])
+k8s_resource('virtool-job-create-subtraction', labels=["jobs"], new_name="create-subraction", resource_deps=["keda"])
 
 k8s_yaml('manifests/jobs/nuvs.yaml')
-k8s_resource(objects=["virtool-job-nuvs"], labels=["jobs"], new_name="nuvs", resource_deps=["keda"])
+k8s_resource('virtool-job-nuvs', labels=["jobs"], new_name="nuvs", resource_deps=["keda"])
 
 k8s_yaml('manifests/jobs/pathoscope.yaml')
-k8s_resource(objects=["virtool-job-pathoscope"], labels=["jobs"], new_name="pathoscope", resource_deps=["keda"])
+k8s_resource('virtool-job-pathoscope', labels=["jobs"], new_name="pathoscope", resource_deps=["keda"])
