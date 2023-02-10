@@ -42,20 +42,14 @@ while read line; do
   key_value=$(parse_line "$line")
   key=$(echo "$key_value" | cut -d ':' -f1)
   value=$(echo "$key_value" | cut -d ':' -f2)
-  echo "key: $key, value: $value"
   if [[ $key == "fileName" ]]; then
       output="${value}.yaml"
-      echo "writing yaml file for $output"
       cp $template $output
+      echo "writing yaml file for $output"
   elif [[ $output != "" ]]; then
       sed -i "s|{{ ${key} }}|\"${value}\"|g" $output
   fi
 done < $properties
-
-
-
-
-
 
 
 exit 0
