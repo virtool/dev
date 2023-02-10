@@ -92,11 +92,20 @@ Jobs
 """
 jobs = ['shared.yaml', 'build-index.yaml','create-sample.yaml']
 
+if "build-index" in to_edit:
+    docker_build('ghcr.io/virtool/build-index', '../workflow-build-index/')
+
 if "create-sample" in to_edit:
     docker_build('ghcr.io/virtool/create-sample', '../workflow-create-sample/')
 
 if "create-subtraction" in to_edit:
     docker_build('ghcr.io/virtool/create-subtraction', '../workflow-create-subtraction/')
+
+if "nuvs" in to_edit:
+    docker_build('virtool/nuvs', '../workflow-nuvs/')
+
+if "pathoscope" in to_edit:
+    docker_build('ghcr.io/virtool/pathoscope', '../workflow-pathoscope/', target='base')
 
 k8s_kind('ScaledJob', image_json_path='{.spec.jobTargetRef.template.spec.containers[0].image}')
 
