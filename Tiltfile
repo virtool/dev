@@ -45,7 +45,7 @@ k8s_yaml('manifests/ingress.yaml')
 k8s_yaml('manifests/nfs.yaml')
 k8s_resource('nfs-server', labels=['data'], new_name='nfs')
 
-k8s_yaml('manifests/openfga-migration.yaml')
+k8s_yaml('manifests/openfga_migration.yaml')
 k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgresql"])
 
 k8s_yaml('manifests/openfga.yaml')
@@ -84,8 +84,14 @@ k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool']
 k8s_yaml('manifests/tasks_runner.yaml')
 k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
-k8s_yaml('manifests/tasks/AddSubtractionFiles.yaml')
-k8s_resource('add-subtraction-files', resource_deps=api_resource_deps)
+
+# Create task spawners based on the values in the spawn-tasks-values.yaml file.
+values = read_yaml_stream('manifests/tasks/templates/spawn-tasks-values.yaml')
+for task in values[0]["tasks"]:
+    k8s_yaml("manifests/tasks/task_yaml/{}.yaml".format(task["fileName"]))
+    k8s_resource('{}'.format(task["kubeName"]), labels=['tasks'], resource_deps=api_resource_deps, new_name=task["taskName"])
+
+
 
 """
 Jobs

@@ -39,8 +39,6 @@ spec:
               value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
             - name: VT_DEV
               value: "true"
-            - name: VT_NO_TASKS
-              value: "true"
           ports:
             - containerPort: 9950
               protocol: TCP

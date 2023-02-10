@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "virtool-task-store-nuvs-files"
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: "virtool-task-store-nuvs-files"
+            image: ghcr.io/virtool/virtool:13.6.0
+            imagePullPolicy: IfNotPresent
+            command: ["python", "run.py", "spawn_task", "--task-name", "store_nuvs_files"]
+            env:
+            - name: VT_DATA_PATH
+              value: "/data"
+            - name: VT_DB_CONNECTION_STRING
+              value: "mongodb://virtool:virtool@mongo-mongodb-0.mongo-mongodb-headless.default.svc.cluster.local/virtool"
+            - name: VT_DB_NAME
+              value: "virtool"
+            - name: VT_OPENFGA_SCHEME
+              value: "http"
+            - name: VT_OPENFGA_HOST
+              value: "openfga.default.svc.cluster.local"
+            - name: VT_SERVER_HOST
+              value: "0.0.0.0"
+            - name: VT_REDIS_CONNECTION_STRING
+              value: "redis://:virtool@redis-master.default.svc.cluster.local"
+            - name: VT_POSTGRES_CONNECTION_STRING
+              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+            - name: VT_DEV
+              value: "true"
+            volumeMounts:
+            - name: data
+              mountPath: /data
+          restartPolicy: Never
+          volumes:
+          - name: data
+            nfs:
+                server: 10.109.28.120
+                path: /
