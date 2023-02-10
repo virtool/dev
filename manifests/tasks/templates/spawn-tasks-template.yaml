@@ -1,18 +1,18 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "add-subtraction-files"
+  name: {{ kubeName }}
 spec:
-  schedule: "*/10 * * * *"
+  schedule: {{ schedule }}
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: "add-subtraction-files"
+          - name: {{ kubeName }}
             image: ghcr.io/virtool/virtool:13.6.0
             imagePullPolicy: IfNotPresent
-            command: ["python", "run.py", "spawn_task", "--task-name", "add_subtraction_files"]
+            command: ["python", "run.py", "spawn_task", "--task-name", {{ taskName }}]
             env:
             - name: VT_DATA_PATH
               value: "/data"

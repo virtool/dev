@@ -1,20 +1,18 @@
-{{- range Values.tasks}}
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .kubeName }}
+  name: "migrate-files"
 spec:
-  schedule: {{ .schedule }}
+  schedule: "*/10 * * * *"
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: {{ .kubeName }}
+          - name: "migrate-files"
             image: ghcr.io/virtool/virtool:13.6.0
             imagePullPolicy: IfNotPresent
-            command: ["python", "run.py", "spawn_task", "--task-name", "add_subtraction_files"]
+            command: ["python", "run.py", "spawn_task", "--task-name", "migrate_files"]
             env:
             - name: VT_DATA_PATH
               value: "/data"
@@ -34,8 +32,6 @@ spec:
               value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
             - name: VT_DEV
               value: "true"
-            - name: VT_TASK_NAME
-              value: {{ .taskName }}
             volumeMounts:
             - name: data
               mountPath: /data
@@ -45,4 +41,3 @@ spec:
             nfs:
                 server: 10.109.28.120
                 path: /
-{{- end }}

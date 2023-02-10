@@ -84,8 +84,14 @@ k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool']
 k8s_yaml('manifests/tasks_runner.yaml')
 k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
-k8s_yaml('manifests/tasks/AddSubtractionFiles.yaml')
-k8s_resource('add-subtraction-files', resource_deps=api_resource_deps)
+
+# Create task spawners
+values = read_yaml_stream('manifests/tasks/templates/spawn-tasks-values.yaml')
+for task in values[0]["tasks"]:
+    k8s_yaml("manifests/tasks/{}.yaml".format(task["fileName"]))
+    k8s_resource('{}'.format(task["kubeName"]), labels=['tasks'], resource_deps=api_resource_deps)
+
+
 
 """
 Jobs
