@@ -16,9 +16,11 @@ function parse_line() {
     echo "$key:$value"
 }
 
-#check if "generated_yaml folder exists, if not create it
+#check if "generated_yaml folder exists, if not create it. if it is found delete the contents
 if [ ! -d "task_yaml" ]; then
     mkdir task_yaml
+else
+    rm -rf task_yaml/*
 fi
 
 

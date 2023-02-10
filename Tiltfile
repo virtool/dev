@@ -45,7 +45,7 @@ k8s_yaml('manifests/ingress.yaml')
 k8s_yaml('manifests/nfs.yaml')
 k8s_resource('nfs-server', labels=['data'], new_name='nfs')
 
-k8s_yaml('manifests/openfga_migration.yaml')
+k8s_yaml('manifests/openfga-migration.yaml')
 k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgresql"])
 
 k8s_yaml('manifests/openfga.yaml')
@@ -78,10 +78,10 @@ api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-mi
 k8s_yaml('manifests/api.yaml')
 k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps)
 
-k8s_yaml('manifests/jobs_api.yaml')
+k8s_yaml('manifests/jobs-api.yaml')
 k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
-k8s_yaml('manifests/tasks_runner.yaml')
+k8s_yaml('manifests/tasks-runner.yaml')
 k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
 
