@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "virtool-task-check-subtractions-fasta-file"
+  name: "virtool-task-check-subtractions-fasta-files"
 spec:
   schedule: "*/10 * * * *"
   jobTemplate:
@@ -9,10 +9,10 @@ spec:
       template:
         spec:
           containers:
-          - name: "virtool-task-check-subtractions-fasta-file"
+          - name: "virtool-task-check-subtractions-fasta-files"
             image: ghcr.io/virtool/virtool:13.6.0
             imagePullPolicy: IfNotPresent
-            command: ["python", "run.py", "spawn_task", "--task-name", "check_subtractions_fasta_file"]
+            command: ["python", "run.py", "spawn_task", "--task-name", "check_subtractions_fasta_files"]
             env:
             - name: VT_DATA_PATH
               value: "/data"
