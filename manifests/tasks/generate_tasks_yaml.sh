@@ -16,6 +16,10 @@ function parse_line() {
     echo "$key:$value"
 }
 
+#check if "generated_yaml folder exists, if not create it
+if [ ! -d "task_yaml" ]; then
+    mkdir task_yaml
+fi
 
 
 if [ $# -ne 2 ]; then
@@ -43,7 +47,7 @@ while read line; do
   key=$(echo "$key_value" | cut -d ':' -f1)
   value=$(echo "$key_value" | cut -d ':' -f2)
   if [[ $key == "fileName" ]]; then
-      output="${value}.yaml"
+      output="task_yaml/${value}.yaml"
       cp $template $output
       echo "writing yaml file for $output"
   elif [[ $output != "" ]]; then

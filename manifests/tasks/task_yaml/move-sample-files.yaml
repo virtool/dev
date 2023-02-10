@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "store-nuvs-files"
+  name: "virtool-task-move-sample-files"
 spec:
   schedule: "*/10 * * * *"
   jobTemplate:
@@ -9,10 +9,10 @@ spec:
       template:
         spec:
           containers:
-          - name: "store-nuvs-files"
+          - name: "virtool-task-move-sample-files"
             image: ghcr.io/virtool/virtool:13.6.0
             imagePullPolicy: IfNotPresent
-            command: ["python", "run.py", "spawn_task", "--task-name", "store_nuvs_files"]
+            command: ["python", "run.py", "spawn_task", "--task-name", "move_sample_files"]
             env:
             - name: VT_DATA_PATH
               value: "/data"
