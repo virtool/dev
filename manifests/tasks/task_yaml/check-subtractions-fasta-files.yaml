@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: "virtool-task-check-subtractions-fasta-files"
-            image: ghcr.io/virtool/virtool:13.6.0
+            image: ghcr.io/virtool/virtool:15.1.1
             imagePullPolicy: IfNotPresent
             command: ["python", "run.py", "spawn_task", "--task-name", "check_subtractions_fasta_files"]
             env:

@@ -89,7 +89,7 @@ k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virto
 values = read_yaml_stream('manifests/tasks/templates/spawn-tasks-values.yaml')
 for task in values[0]["tasks"]:
     k8s_yaml("manifests/tasks/task_yaml/{}.yaml".format(task["fileName"]))
-    k8s_resource('{}'.format(task["kubeName"]), labels=['tasks'], resource_deps=api_resource_deps, new_name=task["taskName"])
+    k8s_resource('{}'.format(task["kubeName"]), labels=['tasks'], resource_deps=api_resource_deps, new_name=task["fileName"])
 
 
 
