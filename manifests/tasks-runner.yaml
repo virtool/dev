@@ -16,7 +16,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:13.6.0
+        - image: ghcr.io/virtool/virtool:15.1.1
           imagePullPolicy: Always
           name: virtool-tasks-runner
           command: ["python", "run.py", "tasks"]

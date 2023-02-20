@@ -12,7 +12,7 @@ spec:
         app: VirtoolMigration
     spec:
       containers:
-        - image: ghcr.io/virtool/migration:1.6.0
+        - image: ghcr.io/virtool/migration:1.7.2
           imagePullPolicy: Always
           name: virtool-migration
           env:
