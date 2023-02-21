@@ -51,6 +51,9 @@ k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgres
 k8s_yaml('manifests/openfga.yaml')
 k8s_resource('openfga', labels=['data'], resource_deps=["openfga-migration"], port_forwards=[8080])
 
+if 'migration' in to_edit:
+    docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
+
 k8s_yaml('manifests/migration.yaml')
 k8s_resource('virtool-migration', labels=['migration'], resource_deps=["postgresql", "mongo"])
 
