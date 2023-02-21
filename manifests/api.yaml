@@ -19,7 +19,7 @@ spec:
         - image: ghcr.io/virtool/virtool:15.1.1
           imagePullPolicy: Always
           name: virtool-api-web
-          command: ["python", "run.py", "server"]
+          command: ["python", "run.py", "--no-tasks", "server"]
           env:
             - name: VT_DATA_PATH
               value: "/data"
