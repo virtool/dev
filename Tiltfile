@@ -49,7 +49,7 @@ k8s_yaml('manifests/openfga-migration.yaml')
 k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgresql"])
 
 k8s_yaml('manifests/openfga.yaml')
-k8s_resource('openfga', labels=['data'], resource_deps=["openfga-migration"], port_forwards=[8080])
+k8s_resource('openfga', labels=['data'], resource_deps=["openfga-migration"], port_forwards=[8080, 3000])
 
 if 'migration' in to_edit:
     docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
@@ -71,7 +71,7 @@ if 'ui' in to_edit:
     )
 
 k8s_yaml('manifests/ui.yaml')
-k8s_resource('virtool-ui', port_forwards=[3000, 9900], labels=['virtool'])
+k8s_resource('virtool-ui', port_forwards=[9900], labels=['virtool'])
 
 if 'backend' in to_edit:
     docker_build('ghcr.io/virtool/virtool', '../virtool/')
