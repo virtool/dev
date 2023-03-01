@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "dev"
+version = "0.1.0"
+description = "repository for running local virtool instance for development"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+black = "^23.1.0"
+ruamel-yaml = "^0.17.21"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
