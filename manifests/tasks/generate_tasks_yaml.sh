@@ -16,12 +16,7 @@ function parse_line() {
     echo "$key:$value"
 }
 
-#check if "generated_yaml folder exists, if not create it. if it is found delete the contents
-if [ ! -d "task_yaml" ]; then
-    mkdir task_yaml
-else
-    rm -rf task_yaml/*
-fi
+
 
 
 if [ $# -ne 2 ]; then
@@ -32,6 +27,13 @@ fi
 template=$1
 properties=$2
 output=""
+
+#check if "generated_yaml folder exists, if not create it. if it is found delete the contents
+if [ ! -d "task_yaml" ]; then
+    mkdir task_yaml
+else
+    rm -rf task_yaml/*
+fi
 
 if [ ! -f $template ]; then
     echo "Template file $template does not exist"
