@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
             - name: "virtool-task-compress-samples"
-              image: ghcr.io/virtool/virtool:15.1.1
+              image: ghcr.io/virtool/virtool:15.5.0
               imagePullPolicy: IfNotPresent
               command: ["python", "run.py", "spawn_task", "--task-name", "compress_samples"]
               env:
@@ -37,7 +37,7 @@ spec:
                   mountPath: /data
           restartPolicy: Never
           volumes:
-          - name: data
-            nfs:
+            - name: data
+              nfs:
                 server: 10.109.28.120
                 path: /

@@ -16,7 +16,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:15.1.1
+        - image: ghcr.io/virtool/virtool:15.5.0
           imagePullPolicy: Always
           name: virtool-tasks-runner
           command: ["python", "run.py", "tasks"]
@@ -40,8 +40,8 @@ spec:
             - name: VT_DEV
               value: "true"
           ports:
-          - containerPort: 9950
-            protocol: TCP
+            - containerPort: 9950
+              protocol: TCP
           resources:
             limits:
               cpu: 1000m
@@ -50,11 +50,11 @@ spec:
               cpu: 600m
               memory: 1Gi
           volumeMounts:
-          - name: data
-            mountPath: /data
+            - name: data
+              mountPath: /data
       volumes:
-      - name: data
-        nfs:
+        - name: data
+          nfs:
             server: 10.109.28.120
             path: /
 ---
