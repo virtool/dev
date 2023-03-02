@@ -31,3 +31,7 @@ tasks:
     taskName: "check_subtractions_fasta_files"
     kubeName: "virtool-task-check-subtractions-fasta-files"
     schedule: "*/10 * * * *"
+  - fileName: "timeout-jobs"
+    taskName: "timeout_jobs"
+    kubeName: "virtool-task-timeout-jobs"
+    schedule: "*/10 * * * *"
