@@ -31,3 +31,8 @@ tasks:
     taskName: "check_subtractions_fasta_files"
     kubeName: "virtool-task-check-subtractions-fasta-files"
     schedule: "*/10 * * * *"
+  - fileName: "deduplicate-sample-names"
+    taskName: "deduplicate_sample_names"
+    kubeName: "virtool-task-deduplicate-sample-names"
+    schedule: "*/10 * * * *"
+
