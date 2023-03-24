@@ -43,3 +43,7 @@ tasks:
     taskName: "refresh_hmms"
     kubeName: "virtool-task-refresh-hmms"
     schedule: "*/10 * * * *"
+  - fileName: "populate-workflows-field"
+    taskName: "populate_workflows_field"
+    kubeName: "virtool-task-populate-workflows-field"
+    schedule: "*/10 * * * *"
