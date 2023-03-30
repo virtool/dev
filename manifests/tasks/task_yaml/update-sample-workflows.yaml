@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "virtool-task-populate-workflows-field"
+  name: "virtool-task-update-sample-workflows"
 spec:
   schedule: "*/10 * * * *"
   jobTemplate:
@@ -9,10 +9,10 @@ spec:
       template:
         spec:
           containers:
-          - name: "virtool-task-populate-workflows-field"
+          - name: "virtool-task-update-sample-workflows"
             image: ghcr.io/virtool/virtool:15.1.1
             imagePullPolicy: IfNotPresent
-            command: ["python", "run.py", "spawn_task", "--task-name", "populate_workflows_field"]
+            command: ["python", "run.py", "spawn_task", "--task-name", "update_sample_workflows"]
             env:
             - name: VT_DATA_PATH
               value: "/data"
