@@ -1,3 +1,5 @@
+load('ext://restart_process', 'docker_build_with_restart')
+
 # Configuration
 config.define_string_list("to-edit")
 
@@ -74,7 +76,10 @@ k8s_yaml('manifests/ui.yaml')
 k8s_resource('virtool-ui', port_forwards=[9900], labels=['virtool'])
 
 if 'backend' in to_edit:
-    docker_build('ghcr.io/virtool/virtool', '../virtool/')
+    docker_build(
+        'ghcr.io/virtool/virtool',
+        '../virtool/',
+    )
 
 api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
 
@@ -93,8 +98,6 @@ values = read_yaml_stream('manifests/tasks/templates/spawn-tasks-values.yaml')
 for task in values[0]["tasks"]:
     k8s_yaml("manifests/tasks/task_yaml/{}.yaml".format(task["fileName"]))
     k8s_resource('{}'.format(task["kubeName"]), labels=['tasks'], resource_deps=api_resource_deps, new_name=task["fileName"])
-
-
 
 """
 Jobs
