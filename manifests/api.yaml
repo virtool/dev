@@ -16,29 +16,27 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:15.1.1
+        - image: ghcr.io/virtool/virtool:17.0.0
           imagePullPolicy: Always
           name: virtool-api-web
-          command: ["python", "run.py", "--no-tasks", "server"]
+          command: ["python", "run.py", "server", "api"]
           env:
             - name: VT_DATA_PATH
               value: "/data"
-            - name: VT_DB_CONNECTION_STRING
-              value: "mongodb://virtool:virtool@mongo-mongodb-0.mongo-mongodb-headless.default.svc.cluster.local/virtool"
-            - name: VT_DB_NAME
-              value: "virtool"
+            - name: VT_DEV
+              value: "true"
+            - name: VT_HOST
+              value: "0.0.0.0"
+            - name: VT_MONGODB_CONNECTION_STRING
+              value: "mongodb://virtool:virtool@mongo-mongodb-headless.default.svc.cluster.local/virtool"
             - name: VT_OPENFGA_SCHEME
               value: "http"
             - name: VT_OPENFGA_HOST
               value: "openfga.default.svc.cluster.local"
-            - name: VT_SERVER_HOST
-              value: "0.0.0.0"
-            - name: VT_REDIS_CONNECTION_STRING
-              value: "redis://:virtool@redis-master.default.svc.cluster.local"
             - name: VT_POSTGRES_CONNECTION_STRING
               value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
-            - name: VT_DEV
-              value: "true"
+            - name: VT_REDIS_CONNECTION_STRING
+              value: "redis://:virtool@redis-master.default.svc.cluster.local"
           ports:
             - containerPort: 9950
               protocol: TCP
