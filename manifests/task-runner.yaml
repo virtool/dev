@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtool-tasks-runner
+  name: virtool-task-runner
   labels:
-    app: VirtoolTasksRunner
+    app: VirtoolTaskRunner
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: VirtoolTasksRunner
+      app: VirtoolTaskRunner
   template:
     metadata:
       labels:
-        app: VirtoolTasksRunner
+        app: VirtoolTaskRunner
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:17.0.0
+        - image: ghcr.io/virtool/virtool:19.3.0
           imagePullPolicy: Always
-          name: virtool-tasks-runner
+          name: virtool-task-runner
           command: ["python", "run.py", "tasks", "runner"]
           env:
             - name: VT_DATA_PATH
@@ -61,7 +61,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: VirtoolTasksRunner
+    app: VirtoolTaskRunner
   ports:
     - name: http
       port: 80
