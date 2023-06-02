@@ -15,7 +15,7 @@ spec:
         app: VirtoolUI
     spec:
       containers:
-        - image: ghcr.io/virtool/ui:3.5.1
+        - image: ghcr.io/virtool/ui:3.10.0
           imagePullPolicy: Always
           name: virtool-ui
           command: ["node", "run.js"]

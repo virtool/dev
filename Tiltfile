@@ -38,11 +38,9 @@ helm_resource(
     port_forwards=[6379],
 )
 
-
 helm_resource('keda', 'kedacore/keda', labels=['keda'])
 
 k8s_yaml('manifests/ingress.yaml')
-
 
 k8s_yaml('manifests/nfs.yaml')
 k8s_resource('nfs-server', labels=['data'], new_name='nfs')
@@ -83,21 +81,17 @@ if 'backend' in to_edit:
 
 api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
 
-k8s_yaml('manifests/api.yaml')
+k8s_yaml('manifests/api-web.yaml')
 k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps)
 
-k8s_yaml('manifests/jobs-api.yaml')
+k8s_yaml('manifests/api-jobs.yaml')
 k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
-k8s_yaml('manifests/tasks-runner.yaml')
-k8s_resource('virtool-tasks-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
+k8s_yaml('manifests/task-runner.yaml')
+k8s_resource('virtool-task-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
 
-
-# Create task spawners based on the values in the spawn-tasks-values.yaml file.
-values = read_yaml_stream('manifests/tasks/templates/spawn-tasks-values.yaml')
-for task in values[0]["tasks"]:
-    k8s_yaml("manifests/tasks/task_yaml/{}.yaml".format(task["fileName"]))
-    k8s_resource('{}'.format(task["kubeName"]), labels=['tasks'], resource_deps=api_resource_deps, new_name=task["fileName"])
+k8s_yaml('manifests/task-spawner.yaml')
+k8s_resource('virtool-task-spawner', labels=['virtool'], resource_deps=api_resource_deps)
 
 """
 Jobs

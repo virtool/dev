@@ -1,69 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtool-api-jobs
+  name: virtool-task-spawner
   labels:
-    app: VirtoolApiJobs
+    app: VirtoolTaskSpawner
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: VirtoolApiJobs
+      app: VirtoolTaskSpawner
   template:
     metadata:
       labels:
-        app: VirtoolApiJobs
+        app: VirtoolTaskSpawner
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:17.0.0
+        - image: ghcr.io/virtool/virtool:19.3.0
           imagePullPolicy: Always
-          name: virtool-api-jobs
-          command: ["python", "run.py", "server", "jobs"]
+          name: virtool-task-spawner
+          command: ["python", "run.py", "tasks", "spawner"]
           env:
-            - name: VT_DATA_PATH
-              value: "/data"
             - name: VT_HOST
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING
-              value: "mongodb://virtool:virtool@mongo-mongodb-headless.default.svc.cluster.local:27017/virtool"
-            - name: VT_OPENFGA_SCHEME
-              value: "http"
-            - name: VT_OPENFGA_HOST
-              value: "openfga.default.svc.cluster.local"
+              value: "mongodb://virtool:virtool@mongo-mongodb-0.mongo-mongodb-headless.default.svc.cluster.local/virtool"
             - name: VT_POSTGRES_CONNECTION_STRING
               value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
             - name: VT_REDIS_CONNECTION_STRING
               value: "redis://:virtool@redis-master.default.svc.cluster.local"
           ports:
-            - containerPort: 9950
-              protocol: TCP
+          - containerPort: 9950
+            protocol: TCP
           resources:
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 1Gi
             requests:
-              cpu: 600m
+              cpu: 400m
               memory: 1Gi
-          volumeMounts:
-          - name: data
-            mountPath: /data
-      volumes:
-      - name: data
-        nfs:
-            server: 10.109.28.120
-            path: /
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: jobs-api
+  name: tasks-spawner
 spec:
   type: ClusterIP
   selector:
-    app: VirtoolApiJobs
+    app: VirtoolTaskSpawner
   ports:
     - name: http
       port: 80
       targetPort: 9950
-
