@@ -16,15 +16,13 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:19.3.0
+        - image: ghcr.io/virtool/virtool:19.4.0
           imagePullPolicy: Always
           name: virtool-api-web
           command: ["python", "run.py", "server", "api"]
           env:
             - name: VT_DATA_PATH
               value: "/data"
-            - name: VT_DEV
-              value: "true"
             - name: VT_HOST
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING

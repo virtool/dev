@@ -55,7 +55,9 @@ if 'migration' in to_edit:
     docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
 
 k8s_yaml('manifests/migration.yaml')
-k8s_resource('virtool-migration', labels=['migration'], resource_deps=["postgresql", "mongo"])
+k8s_resource('virtool-migration', labels=['migration'], resource_deps=["postgresql", "mongo"], trigger_mode=TRIGGER_MODE_MANUAL)
+
+docker_prune_settings(max_age_mins=1)
 
 # Actual Virtool stuff.
 if 'ui' in to_edit:
@@ -82,16 +84,16 @@ if 'backend' in to_edit:
 api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
 
 k8s_yaml('manifests/api-web.yaml')
-k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps)
+k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps, trigger_mode=TRIGGER_MODE_MANUAL)
 
 k8s_yaml('manifests/api-jobs.yaml')
-k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool'], resource_deps=api_resource_deps)
+k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool'], resource_deps=api_resource_deps, trigger_mode=TRIGGER_MODE_MANUAL)
 
 k8s_yaml('manifests/task-runner.yaml')
-k8s_resource('virtool-task-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps)
+k8s_resource('virtool-task-runner', port_forwards=["9970:9950"], labels=['virtool'], resource_deps=api_resource_deps, trigger_mode=TRIGGER_MODE_MANUAL)
 
 k8s_yaml('manifests/task-spawner.yaml')
-k8s_resource('virtool-task-spawner', labels=['virtool'], resource_deps=api_resource_deps)
+k8s_resource('virtool-task-spawner', labels=['virtool'], resource_deps=api_resource_deps, trigger_mode=TRIGGER_MODE_MANUAL)
 
 """
 Jobs
