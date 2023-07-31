@@ -16,7 +16,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:19.4.0
+        - image: ghcr.io/virtool/virtool:20.0.1
           imagePullPolicy: Always
           name: virtool-task-spawner
           command: ["python", "run.py", "tasks", "spawner"]
@@ -30,8 +30,8 @@ spec:
             - name: VT_REDIS_CONNECTION_STRING
               value: "redis://:virtool@redis-master.default.svc.cluster.local"
           ports:
-          - containerPort: 9950
-            protocol: TCP
+            - containerPort: 9950
+              protocol: TCP
           resources:
             limits:
               cpu: 500m

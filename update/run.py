@@ -23,8 +23,6 @@ yaml.indent(mapping=2, sequence=4, offset=2)
 YAML_DIRECTORIES = [
     "manifests",
     "manifests/jobs",
-    "manifests/tasks",
-    "manifests/tasks/task_yaml",
 ]
 
 
