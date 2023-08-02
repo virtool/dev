@@ -2,9 +2,11 @@ load('ext://restart_process', 'docker_build_with_restart')
 
 # Configuration
 config.define_string_list("to-edit")
+config.define_bool("persistence")
 
 cfg = config.parse()
 to_edit = cfg.get('to-edit', [])
+persistence = cfg.get('persistence', True)
 
 # Backing Services and Components
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
@@ -17,7 +19,7 @@ watch_file("manifests/mongo_values.yaml")
 helm_resource(
     'mongo',
     'bitnami/mongodb',
-    flags=["-f", "manifests/mongo_values.yaml"],
+    flags=["-f", "manifests/mongo_values.yaml", "--set", "persistence.enabled={}".format(persistence)],
     port_forwards=[27017],
     labels=['data']
 )
@@ -25,7 +27,7 @@ helm_resource(
 helm_resource(
     'postgresql',
     'bitnami/postgresql',
-    flags=["--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool"],
+    flags=["--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool", "--set", "primary.persistence.enabled={}".format(persistence)],
     port_forwards=[5432],
     labels=['data']
 )
@@ -33,7 +35,7 @@ helm_resource(
 helm_resource(
     'redis',
     'bitnami/redis',
-    flags=['--set', 'architecture=standalone', '--set', 'auth.password=virtool', "--set", "master.disableCommands=null"],
+    flags=['--set', 'architecture=standalone', '--set', 'auth.password=virtool', "--set", "master.disableCommands=null", "--set", "master.persistence.enabled={}".format(persistence)],
     labels=['data'],
     port_forwards=[6379],
 )
@@ -42,7 +44,13 @@ helm_resource('keda', 'kedacore/keda', labels=['keda'])
 
 k8s_yaml('manifests/ingress.yaml')
 
-k8s_yaml('manifests/nfs.yaml')
+nfs_resources = read_yaml_stream('manifests/nfs.yaml')
+if not persistence:
+    for resource in nfs_resources:
+        if resource["metadata"]["name"] == "nfs-server":
+            resource["spec"]["containers"][0].pop("volumeMounts")
+
+k8s_yaml(encode_yaml_stream(nfs_resources))
 k8s_resource('nfs-server', labels=['data'], new_name='nfs')
 
 k8s_yaml('manifests/openfga-migration.yaml')
