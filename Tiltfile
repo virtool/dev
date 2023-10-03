@@ -19,7 +19,7 @@ watch_file("manifests/mongo_values.yaml")
 helm_resource(
     'mongo',
     'bitnami/mongodb',
-    flags=["-f", "manifests/mongo_values.yaml", "--set", "persistence.enabled={}".format(persistence)],
+    flags=["--set","image.tag=7.0.1-debian-11-r6", "-f", "manifests/mongo_values.yaml", "--set", "persistence.enabled={}".format(persistence)],
     port_forwards=[27017],
     labels=['data']
 )
@@ -27,7 +27,7 @@ helm_resource(
 helm_resource(
     'postgresql',
     'bitnami/postgresql',
-    flags=["--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool", "--set", "primary.persistence.enabled={}".format(persistence)],
+    flags=["--set", "image.tag=15.4.0-debian-11-r47","--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool", "--set", "primary.persistence.enabled={}".format(persistence)],
     port_forwards=[5432],
     labels=['data']
 )
@@ -35,7 +35,7 @@ helm_resource(
 helm_resource(
     'redis',
     'bitnami/redis',
-    flags=['--set', 'architecture=standalone', '--set', 'auth.password=virtool', "--set", "master.disableCommands=null", "--set", "master.persistence.enabled={}".format(persistence)],
+    flags=['--set','image.tag=7.2.1-debian-11-r0', '--set', 'architecture=standalone', '--set', 'auth.password=virtool', "--set", "master.disableCommands=null", "--set", "master.persistence.enabled={}".format(persistence)],
     labels=['data'],
     port_forwards=[6379],
 )
