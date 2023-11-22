@@ -12,7 +12,7 @@ spec:
         app: VirtoolMigration
     spec:
       containers:
-        - image: ghcr.io/virtool/virtool:21.0.5
+        - image: ghcr.io/virtool/virtool:22.1.3
           name: virtool-migration
           command: ["python", "run.py", "migration", "apply"]
           env:
