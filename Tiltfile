@@ -92,7 +92,13 @@ if 'backend' in to_edit:
 api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
 
 k8s_yaml('manifests/api-web.yaml')
-k8s_resource('virtool-api-web', port_forwards=[9950], labels=['virtool'], resource_deps=api_resource_deps, trigger_mode=TRIGGER_MODE_MANUAL)
+k8s_resource(
+    'virtool-api-web',
+    labels=['virtool'],
+    port_forwards=[9950],
+    resource_deps=api_resource_deps,
+    trigger_mode=TRIGGER_MODE_MANUAL
+)
 
 k8s_yaml('manifests/api-jobs.yaml')
 k8s_resource('virtool-api-jobs', port_forwards=["9960:9950"], labels=['virtool'], resource_deps=api_resource_deps, trigger_mode=TRIGGER_MODE_MANUAL)
@@ -109,19 +115,39 @@ Jobs
 jobs = ['shared.yaml', 'build-index.yaml','create-sample.yaml']
 
 if "build-index" in to_edit:
-    docker_build('ghcr.io/virtool/build-index', '../workflow-build-index/')
+    docker_build(
+        'ghcr.io/virtool/build-index',
+        '../workflow-build-index/',
+        target='base'
+    )
 
 if "create-sample" in to_edit:
-    docker_build('ghcr.io/virtool/create-sample', '../workflow-create-sample/')
+    docker_build(
+        'ghcr.io/virtool/create-sample',
+        '../workflow-create-sample/',
+        target='base'
+    )
 
 if "create-subtraction" in to_edit:
-    docker_build('ghcr.io/virtool/create-subtraction', '../workflow-create-subtraction/')
+    docker_build(
+        'ghcr.io/virtool/create-subtraction',
+        '../workflow-create-subtraction/',
+        target='base'
+    )
 
 if "nuvs" in to_edit:
-    docker_build('virtool/nuvs', '../workflow-nuvs/')
+    docker_build(
+        'ghcr.io/virtool/nuvs',
+        '../workflow-nuvs/',
+        target='base'
+    )
 
 if "pathoscope" in to_edit:
-    docker_build('ghcr.io/virtool/pathoscope', '../workflow-pathoscope/', target='base')
+    docker_build(
+        'ghcr.io/virtool/pathoscope',
+        '../workflow-pathoscope/',
+        target='base'
+    )
 
 k8s_kind('ScaledJob', image_json_path='{.spec.jobTargetRef.template.spec.containers[0].image}')
 
