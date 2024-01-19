@@ -1,7 +1,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledJob
 metadata:
-  name: virtool-job-create-sample
+  name: virtool-job-iimi
 spec:
   jobTargetRef:
     backoffLimit: 1
@@ -13,32 +13,30 @@ spec:
         annotations:
           cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
         labels:
-          app: jobs-create-sample
+          app: job-iimi
       spec:
         containers:
-          - name: job-create-sample
-            image: ghcr.io/virtool/create-sample:4.1.4
+          - name: job-iimi
+            image: ghcr.io/virtool/iimi:0.1.0
             imagePullPolicy: Always
-            command: [run-workflow]
+            args: [run-workflow]
             envFrom:
               - configMapRef:
                   name: virtool-jobs-config
             env:
               - name: VT_PROC
-                value: "2"
-              - name: VT_MEM
                 value: "4"
+              - name: VT_MEM
+                value: "10"
               - name: VT_REDIS_LIST_NAME
-                value: "jobs_create_sample"
+                value: "jobs_iimi"
             resources:
               limits:
-                cpu: "3"
-                memory: 5Gi
-                ephemeral-storage: 25G
+                cpu: "5"
+                memory: 11Gi
               requests:
-                cpu: "3"
-                memory: 5Gi
-                ephemeral-storage: 25G
+                cpu: "5"
+                memory: 11Gi
   failedJobsHistoryLimit: 5
   successfulJobsHistoryLimit: 1
   triggers:
@@ -46,5 +44,5 @@ spec:
       metadata:
         addressFromEnv: VT_REDIS_HOST
         passwordFromEnv: VT_REDIS_PASSWORD
-        listName: jobs_create_sample
+        listName: jobs_iimi
         listLength: "1"

@@ -63,7 +63,7 @@ if 'migration' in to_edit:
     docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
 
 k8s_yaml('manifests/migration.yaml')
-k8s_resource('virtool-migration', labels=['migration'], resource_deps=["postgresql", "mongo"], trigger_mode=TRIGGER_MODE_MANUAL)
+k8s_resource('virtool-migration', labels=['migration'], resource_deps=["mongo", "nfs", "openfga","postgresql"], trigger_mode=TRIGGER_MODE_MANUAL)
 
 docker_prune_settings(max_age_mins=1)
 
@@ -135,6 +135,9 @@ if "create-subtraction" in to_edit:
         target='base'
     )
 
+if "iimi" in to_edit:
+    docker_build('ghcr.io/virtool/iimi', '../workflow-iimi/', target='base')
+
 if "nuvs" in to_edit:
     docker_build(
         'ghcr.io/virtool/nuvs',
@@ -162,6 +165,9 @@ k8s_resource('virtool-job-create-sample', labels=["jobs"], new_name="create-samp
 
 k8s_yaml('manifests/jobs/create-subtraction.yaml')
 k8s_resource('virtool-job-create-subtraction', labels=["jobs"], new_name="create-subraction", resource_deps=["keda"])
+
+k8s_yaml('manifests/jobs/iimi.yaml')
+k8s_resource('virtool-job-iimi', labels=["jobs"], new_name="iimi", resource_deps=["keda"])
 
 k8s_yaml('manifests/jobs/nuvs.yaml')
 k8s_resource('virtool-job-nuvs', labels=["jobs"], new_name="nuvs", resource_deps=["keda"])
