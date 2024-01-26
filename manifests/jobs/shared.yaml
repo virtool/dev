@@ -3,9 +3,8 @@ kind: ConfigMap
 metadata:
   name: virtool-jobs-config
 data:
-  VT_EXIT_AFTER_ONE: "true"
   VT_JOBS_API_CONNECTION_STRING: "http://jobs-api.default.svc.cluster.local"
-  VT_TIMEOUT: "120"
   VT_REDIS_CONNECTION_STRING: "redis://:virtool@redis-master.default.svc.cluster.local"
   VT_REDIS_HOST: "redis-master.default.svc.cluster.local:6379"
   VT_REDIS_PASSWORD: "virtool"
+  VT_TIMEOUT: "120"
