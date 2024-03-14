@@ -19,7 +19,7 @@ watch_file("manifests/mongo_values.yaml")
 helm_resource(
     'mongo',
     'bitnami/mongodb',
-    flags=["--set","image.tag=7.0.1-debian-11-r6", "-f", "manifests/mongo_values.yaml", "--set", "persistence.enabled={}".format(persistence)],
+    flags=["--set","image.tag=7.0.5-debian-12-r5", "-f", "manifests/mongo_values.yaml", "--set", "persistence.enabled={}".format(persistence)],
     port_forwards=[27017],
     labels=['data']
 )
