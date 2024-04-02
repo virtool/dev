@@ -27,7 +27,7 @@ helm_resource(
 helm_resource(
     'postgresql',
     'bitnami/postgresql',
-    flags=["--set", "image.tag=15.4.0-debian-11-r47","--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool", "--set", "primary.persistence.enabled={}".format(persistence)],
+    flags=["--set", "image.tag=15.6.0-debian-11-r16","--set", "auth.username=virtool", "--set", "auth.password=virtool", "--set", "auth.database=virtool", "--set", "primary.persistence.enabled={}".format(persistence)],
     port_forwards=[5432],
     labels=['data']
 )
