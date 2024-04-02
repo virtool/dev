@@ -11,6 +11,10 @@ auth:
     - virtool
 arbiter:
   enabled: false
-
-
-
+resources:
+  requests:
+    cpu: 500m
+    memory: 500Mi
+  limits:
+    cpu: 500m
+    memory: 2Gi
