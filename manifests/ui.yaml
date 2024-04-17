@@ -25,7 +25,7 @@ spec:
             - name: VT_UI_HOST
               value: "0.0.0.0"
             - name: VT_UI_API_URL
-              value: "https://localhost:9900/api"
+              value: "http://api-service.default.svc.cluster.local"
           ports:
             - containerPort: 9900
               protocol: TCP
