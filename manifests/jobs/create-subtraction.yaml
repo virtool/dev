@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
           - name: job-create-subtraction
-            image: ghcr.io/virtool/create-subtraction:5.1.2
+            image: ghcr.io/virtool/create-subtraction:5.2.0
             imagePullPolicy: Always
             command: [run-workflow]
             envFrom:
