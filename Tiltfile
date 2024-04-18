@@ -81,7 +81,7 @@ if 'ui' in to_edit:
     )
 
 k8s_yaml('manifests/ui.yaml')
-k8s_resource('virtool-ui', port_forwards=[9900], labels=['virtool'])
+k8s_resource('virtool-ui', port_forwards=[9900], labels=['virtool'], resource_deps=["virtool-api-web"])
 
 if 'backend' in to_edit:
     docker_build(

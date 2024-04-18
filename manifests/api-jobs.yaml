@@ -16,7 +16,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:23.2.0
+        - image: ghcr.io/virtool/virtool:23.4.1
           imagePullPolicy: Always
           name: virtool-api-jobs
           command: ["python", "run.py", "server", "jobs"]
