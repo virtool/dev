@@ -13,7 +13,9 @@ author = "Ian Boyes, Reece Hoffmann"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    "sphinx.ext.intersphinx",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -23,3 +25,20 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "piccolo_theme"
 # html_static_path = ['_static']
+
+
+# -- Options for intersphinx extension ---------------------------------------
+
+intersphinx_mapping = {
+    "virtool": (
+        "https://virtool-test.readthedocs.io/en/latest/",
+        None,
+    ),
+    "workflow": (
+        "https://virtool-test.readthedocs.io/projects/workflow/en/latest/",
+        None,
+    ),
+    "core": ("https://virtool-test.readthedocs.io/projects/core/en/latest/", None),
+}
+# https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#confval-intersphinx_disabled_reftypes
+# intersphinx_disabled_reftypes = ["*"]
