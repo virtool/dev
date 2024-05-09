@@ -84,9 +84,10 @@ k8s_yaml('manifests/ui.yaml')
 k8s_resource('virtool-ui', port_forwards=[9900], labels=['virtool'], resource_deps=["virtool-api-web"])
 
 if 'backend' in to_edit:
-    docker_build(
-        'ghcr.io/virtool/virtool',
-        '../virtool/',
+    custom_build(
+      'ghcr.io/virtool/virtool',
+      'docker build -t $EXPECTED_REF ../virtool',
+      ['../virtool'],
     )
 
 api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
