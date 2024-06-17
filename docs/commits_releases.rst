@@ -83,3 +83,20 @@ Releases
 ========
 
 Releases are automated using `semantic-release <https://semantic-release.gitbook.io/semantic-release>`_.
+
+Compatibility
+-------------
+
+Be careful to use the ``BREAKING CHANGE`` keyword when your changes break compatibility.
+
+Example:
+
+* Removing a field from a response from an API endpoint.
+* Changing the shape of a response from an API endpoint.
+* Changing paths or search query parameters.
+* Removing deprecated functionality.
+* Making changes that require a certain migration to have been applied.
+* Changing configuration options that could break configurations in 
+  production and development environments.
+* Making changes that require a certain version of a service like Postgres, Redis, or
+  OpenFGA.
