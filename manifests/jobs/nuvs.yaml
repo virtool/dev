@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
           - name: job-nuvs
-            image: ghcr.io/virtool/nuvs:5.3.0
+            image: ghcr.io/virtool/nuvs:5.4.1
             imagePullPolicy: Always
             command: [run-workflow]
             envFrom:
@@ -31,12 +31,9 @@ spec:
               - name: VT_REDIS_LIST_NAME
                 value: "jobs_nuvs"
             resources:
-              limits:
-                cpu: "10"
-                memory: 14Gi
               requests:
-                cpu: "10"
-                memory: 14Gi
+                cpu: "4"
+                memory: 10Gi
   failedJobsHistoryLimit: 5
   successfulJobsHistoryLimit: 1
   triggers:

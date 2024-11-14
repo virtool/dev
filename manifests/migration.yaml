@@ -12,9 +12,9 @@ spec:
         app: VirtoolMigration
     spec:
       containers:
-        - image: ghcr.io/virtool/virtool:23.4.1
+        - image: ghcr.io/virtool/virtool:28.0.1
           name: virtool-migration
-          command: ["python", "run.py", "migration", "apply"]
+          command: ["virtool", "migration", "apply"]
           env:
             - name: VT_DATA_PATH
               value: "/data"
