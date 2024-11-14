@@ -15,10 +15,10 @@ spec:
         app: VirtoolUI
     spec:
       containers:
-        - image: ghcr.io/virtool/ui:5.19.1
+        - image: ghcr.io/virtool/ui:6.19.1
           imagePullPolicy: Always
           name: virtool-ui
-          command: ["node", "run.js"]
+          command: ["npm", "run", "server"]
           env:
             - name: VT_UI_PORT
               value: "9900"

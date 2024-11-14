@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
           - name: job-build-index
-            image: ghcr.io/virtool/build-index:5.3.0
+            image: ghcr.io/virtool/build-index:5.4.1
             imagePullPolicy: Always
             command: [run-workflow]
             envFrom:

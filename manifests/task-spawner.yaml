@@ -16,10 +16,10 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: ghcr.io/virtool/virtool:23.4.1
+        - image: ghcr.io/virtool/virtool:28.0.1
           imagePullPolicy: Always
           name: virtool-task-spawner
-          command: ["python", "run.py", "tasks", "spawner"]
+          command: ["virtool", "tasks", "spawner"]
           env:
             - name: VT_HOST
               value: "0.0.0.0"
