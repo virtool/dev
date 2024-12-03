@@ -34,11 +34,11 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 500m
-              memory: 1Gi
-            requests:
               cpu: 400m
-              memory: 1Gi
+              memory: 600M
+            requests:
+              cpu: 200m
+              memory: 300M
 ---
 apiVersion: v1
 kind: Service
