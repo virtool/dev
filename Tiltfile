@@ -11,7 +11,7 @@ persistence = cfg.get('persistence', True)
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
 load('ext://uibutton', 'cmd_button', 'location')
 
-cmd_button('fart',
+cmd_button('pull',
     argv=['bash', 'scripts/pull.sh'],
     icon_name="cloud_download",
     location=location.NAV,
