@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtool-task-spawner
+  name: task-spawner
   labels:
     app: VirtoolTaskSpawner
 spec:
@@ -18,7 +18,7 @@ spec:
       containers:
         - image: ghcr.io/virtool/virtool:28.0.1
           imagePullPolicy: Always
-          name: virtool-task-spawner
+          name: task-spawner
           command: ["virtool", "tasks", "spawner"]
           env:
             - name: VT_HOST

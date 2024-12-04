@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtool-api-jobs
+  name: api-jobs
   labels:
     app: VirtoolApiJobs
 spec:
@@ -18,7 +18,7 @@ spec:
       containers:
         - image: ghcr.io/virtool/virtool:28.0.1
           imagePullPolicy: Always
-          name: virtool-api-jobs
+          name: api-jobs
           command: ["virtool", "server", "jobs"]
           env:
             - name: VT_DATA_PATH

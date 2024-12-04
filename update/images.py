@@ -42,7 +42,7 @@ class GHCRImage(BaseImage):
 class VirtoolRepositories(Enum):
     virtool = GHCRImage("virtool", "virtool")
     pathoscope = GHCRImage("pathoscope", "workflow-pathoscope")
-    ui = GHCRImage("ui", "virtool-ui")
+    ui = GHCRImage("ui", "ui")
     migration = GHCRImage("migration", "virtool-migration")
     create_sample = GHCRImage("create-sample", "workflow-create-sample")
     create_subtraction = GHCRImage("create-subtraction", "workflow-create-subtraction")

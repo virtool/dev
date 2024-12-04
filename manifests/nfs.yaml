@@ -1,10 +1,9 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nfs
+  name: nfs-service
 spec:
   type: ClusterIP
-  clusterIP: 10.109.28.120
   selector:
     role: nfs
   ports:
@@ -16,27 +15,38 @@ spec:
       port: 111
       protocol: UDP
 ---
-kind: Pod
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: nfs-server
+  name: nfs
   labels:
+    app: nfs
     role: nfs
 spec:
-  volumes:
-    - name: pv-nfs-storage
-      persistentVolumeClaim:
-        claimName: pvc-nfs
-  containers:
-    - name: nfs-server
-      image: cpuguy83/nfs-server
-      securityContext:
-        privileged: true
-      args:
-        - /exports/virtool
-      volumeMounts:
-        - mountPath: /exports
-          name: pv-nfs-storage
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs
+  template:
+    metadata:
+      labels:
+        app: nfs
+    spec:
+      containers:
+        - name: nfs-server
+          image: cpuguy83/nfs-server
+          securityContext:
+            privileged: true
+          args:
+            - /exports/virtool
+          volumeMounts:
+            - mountPath: /exports
+              name: pv-nfs-storage
+
+      volumes:
+        - name: pv-nfs-storage
+          persistentVolumeClaim:
+            claimName: pvc-nfs
 ---
 apiVersion: v1
 kind: PersistentVolume
