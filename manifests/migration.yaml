@@ -11,6 +11,7 @@ spec:
       labels:
         app: VirtoolMigration
     spec:
+      restartPolicy: Never
       containers:
         - image: ghcr.io/virtool/virtool:28.0.1
           name: virtool-migration
@@ -43,9 +44,7 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-      restartPolicy: Never
       volumes:
         - name: data
-          nfs:
-            server: 10.109.28.120
-            path: /
+          persistentVolumeClaim:
+            claimName: pvc-virtool

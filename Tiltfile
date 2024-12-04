@@ -58,20 +58,9 @@ helm_resource(
     port_forwards=[6379],
 )
 
-nfs_resources = read_yaml_stream('manifests/nfs.yaml')
 
-if not persistence:
-    for resource in nfs_resources:
-        if resource["metadata"]["name"] == "nfs-server":
-            resource["spec"]["containers"][0].pop("volumeMounts")
-
-k8s_yaml(encode_yaml_stream(nfs_resources))
-k8s_resource(
-    'nfs',
-    labels=['data'],
-    new_name='nfs',
-    objects=['pvc-nfs', 'pv-nfs', 'nfs-service']
-)
+k8s_yaml('manifests/storage.yaml')
+k8s_resource(new_name='storage', labels=['data'], objects=['pv-virtool', 'pvc-virtool'])
 
 """OpenFGA"""
 k8s_yaml('manifests/openfga-migration.yaml')
@@ -92,7 +81,7 @@ k8s_yaml('manifests/migration.yaml')
 k8s_resource(
     'virtool-migration',
     labels=['migration'],
-    resource_deps=["mongo", "nfs", "openfga","postgresql"],
+    resource_deps=["mongo", "openfga", "postgresql", "redis", "storage"],
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
@@ -129,7 +118,7 @@ if 'backend' in to_edit:
       ['../virtool'],
     )
 
-api_resource_deps=["mongo", "postgresql", "openfga", "nfs", "redis", "virtool-migration"]
+api_resource_deps=["mongo", "postgresql", "openfga", "redis", "storage", "virtool-migration"]
 
 k8s_yaml('manifests/api-web.yaml')
 k8s_resource(

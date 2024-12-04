@@ -14,7 +14,6 @@ spec:
       labels:
         app: VirtoolWeb
     spec:
-      restartPolicy: Always
       containers:
         - image: ghcr.io/virtool/virtool:28.0.1
           imagePullPolicy: Always
@@ -47,20 +46,19 @@ spec:
             requests:
               cpu: 400m
               memory: 400M
-          volumeMounts:
-            - name: data
-              mountPath: /data
           startupProbe:
             httpGet:
               path: /
               port: 9950
             initialDelaySeconds: 3
             periodSeconds: 3
+          volumeMounts:
+            - name: data
+              mountPath: /data
       volumes:
         - name: data
-          nfs:
-            server: 10.109.28.120
-            path: /
+          persistentVolumeClaim:
+            claimName: pvc-virtool
 ---
 apiVersion: v1
 kind: Service

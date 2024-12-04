@@ -52,9 +52,8 @@ spec:
               mountPath: /data
       volumes:
         - name: data
-          nfs:
-            server: 10.109.28.120
-            path: /
+          persistentVolumeClaim:
+            claimName: pvc-virtool
 ---
 apiVersion: v1
 kind: Service
