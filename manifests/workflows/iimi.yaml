@@ -1,0 +1,34 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  labels:
+    app.virtool.ca/workflow-name: iimi
+    app.virtool.ca/workflow-size: large
+  name: iimi
+spec:
+  jobTargetRef:
+    template:
+      metadata:
+        labels:
+          app: workflow-iimi
+      spec:
+        containers:
+          - name: virtool-workflow
+            image: ghcr.io/virtool/iimi:0.2.0
+            env:
+              - name: VT_MEM
+                value: "4"
+              - name: VT_PROC
+                value: "10"
+              - name: VT_REDIS_LIST_NAME
+                value: "jobs_iimi"
+            resources:
+              limits:
+                cpu: "5"
+                memory: 11Gi
+              requests:
+                cpu: "5"
+                memory: 11Gi
+  triggers:
+  - metadata:
+      listName: "jobs_iimi"

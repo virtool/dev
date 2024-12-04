@@ -1,0 +1,6 @@
+auth:
+  database: virtool
+  username: virtool
+  password: virtool
+image:
+  tag: "15.6.0-debian-11-r16"

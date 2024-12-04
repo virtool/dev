@@ -1,0 +1,34 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  labels:
+    app.virtool.ca/workflow-name: build-index
+    app.virtool.ca/workflow-size: small
+  name: build-index
+spec:
+  jobTargetRef:
+    template:
+      metadata:
+        labels:
+          app: workflow-build-index
+      spec:
+        containers:
+          - name: workflow-build-index
+            image: ghcr.io/virtool/build-index:5.4.1
+            env:
+              - name: VT_PROC
+                value: "2"
+              - name: VT_MEM
+                value: "2"
+              - name: VT_REDIS_LIST_NAME
+                value: "jobs_build_index"
+            resources:
+              limits:
+                cpu: 3
+                memory: 5Gi
+              requests:
+                cpu: 3
+                memory: 5Gi
+  triggers:
+  - metadata:
+      listName: "jobs_build_index"

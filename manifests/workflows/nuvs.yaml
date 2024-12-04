@@ -1,0 +1,31 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: nuvs
+  labels:
+    app.virtool.ca/workflow-size: large
+    app.virtool.ca/workflow-name: nuvs
+spec:
+  jobTargetRef:
+    template:
+      spec:
+        containers:
+          - name: workflow-nuvs
+            image: ghcr.io/virtool/nuvs:5.4.1
+            env:
+              - name: VT_PROC
+                value: "4"
+              - name: VT_MEM
+                value: "10"
+              - name: VT_REDIS_LIST_NAME
+                value: "jobs_nuvs"
+            resources:
+              limits:
+                cpu: "5"
+                memory: 11Gi
+              requests:
+                cpu: "4"
+                memory: 10Gi
+  triggers:
+  - metadata:
+      listName: "jobs_nuvs"

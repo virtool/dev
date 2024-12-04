@@ -1,0 +1,15 @@
+images:
+  - name: ghcr.io/virtool/ui
+    newTag: 6.19.3
+
+labels:
+  - pairs:
+      app: virtool-ui
+    includeSelectors: true
+    includeTemplates: true
+
+namePrefix: virtool-
+
+resources:
+  - deployment.yaml
+  - service.yaml

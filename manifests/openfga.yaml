@@ -14,6 +14,15 @@ spec:
       labels:
         app: OpenFGA
     spec:
+      initContainers:
+        - name: openfga-migration
+          image: openfga/openfga:v0.2.5
+          command: [ "./openfga", "migrate" ]
+          env:
+            - name: OPENFGA_DATASTORE_ENGINE
+              value: "postgres"
+            - name: OPENFGA_DATASTORE_URI
+              value: "postgresql://virtool@postgresql.default.svc.cluster.local/virtool?password=virtool"
       containers:
         - image: openfga/openfga:v0.2.5
           imagePullPolicy: Always

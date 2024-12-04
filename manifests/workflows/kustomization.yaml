@@ -1,0 +1,31 @@
+namePrefix: virtool-workflow-
+
+labels:
+  - pairs:
+      app.kubernetes.io/component: workflow
+      app.kubernetes.io/part-of: virtool
+    includeSelectors: true
+    includeTemplates: true
+
+patches:
+  - path: patches/patch-strategic.yaml
+    target:
+      kind: ScaledJob
+  - path: patches/patch-json.yaml
+    target:
+      kind: ScaledJob
+  - path: patches/patch-trigger.yaml
+    target:
+      kind: ScaledJob
+  - path: patches/patch-iimi.yaml
+    target:
+      kind: ScaledJob
+      labelSelector: "app.virtool.ca/workflow-name=iimi"
+
+resources:
+  - build-index.yaml
+  - create-sample.yaml
+  - create-subtraction.yaml
+  - iimi.yaml
+  - nuvs.yaml
+  - pathoscope.yaml

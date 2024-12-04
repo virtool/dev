@@ -1,21 +1,17 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: virtool-migration
-  labels:
-    app: virtool-migration
+  name: ignored
 spec:
-  backoffLimit: 0
+  replicas: 1
   template:
     metadata:
       labels:
-        app: virtool-migration
+        app: virtool-api-web
     spec:
-      restartPolicy: Never
       containers:
-        - image: ghcr.io/virtool/virtool:28.0.1
-          name: virtool-migration
-          command: ["virtool", "migration", "apply"]
+        - name: virtool
+          image: ghcr.io/virtool/virtool:latest
           env:
             - name: VT_DATA_PATH
               value: "/data"
@@ -25,22 +21,30 @@ spec:
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING
               value: "mongodb://virtool:virtool@mongo-mongodb-headless.default.svc.cluster.local/virtool"
-            - name: VT_OPENFGA_SCHEME
-              value: "http"
             - name: VT_OPENFGA_HOST
               value: "openfga.default.svc.cluster.local"
-            - name: VT_POSTGRES_CONNECTION_STRING
-              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+            - name: VT_OPENFGA_SCHEME
+              value: "http"
             - name: VT_REDIS_CONNECTION_STRING
               value: "redis://:virtool@redis-master.default.svc.cluster.local"
-          imagePullPolicy: Always
+            - name: VT_POSTGRES_CONNECTION_STRING
+              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+          ports:
+            - containerPort: 9950
+              protocol: TCP
           resources:
             limits:
-              cpu: 800m
-              memory: 2Gi
+              cpu: 500m
+              memory: 500M
             requests:
-              cpu: 200m
-              memory: 1Gi
+              cpu: 300m
+              memory: 300M
+#          startupProbe:
+#            httpGet:
+#              path: /
+#              port: 9950
+#            initialDelaySeconds: 3
+#            periodSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /data
@@ -48,3 +52,5 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: pvc-virtool
+#---
+

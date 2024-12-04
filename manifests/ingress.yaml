@@ -15,20 +15,20 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: api-service
+                name: virtool-api-web-service
                 port:
                   number: 80
           - path: /api[/]?(.*)
             pathType: Prefix
             backend:
               service:
-                name: api-service
+                name: virtool-api-web-service
                 port:
                   number: 80
           - path: /(.*)
             pathType: Prefix
             backend:
               service:
-                name: ui-service
+                name: virtool-ui-service
                 port:
                   number: 80

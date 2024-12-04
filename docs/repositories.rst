@@ -27,7 +27,7 @@ data being ingested into ``virtool-workflow``.
 It also contains reusable code for initializing logs, connecting to databases, and other
 shared functionality.
 
-`virtool-ui <https://github.com/virtool/virtool-ui>`_
+`ui <https://github.com/virtool/ui>`_
 =====================================================
 
 This repository contains the code for the web client.

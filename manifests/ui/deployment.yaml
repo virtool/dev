@@ -1,22 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: virtool-ui
-  labels:
-    app: VirtoolUI
+  name: ui
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: VirtoolUI
+  replicas: 2
   template:
-    metadata:
-      labels:
-        app: VirtoolUI
     spec:
       containers:
-        - image: ghcr.io/virtool/ui:6.19.1
-          imagePullPolicy: Always
+        - image: ghcr.io/virtool/ui:latest
           name: virtool-ui
           command: ["npm", "run", "server"]
           env:
@@ -25,7 +16,7 @@ spec:
             - name: VT_UI_HOST
               value: "0.0.0.0"
             - name: VT_UI_API_URL
-              value: "http://api-service.default.svc.cluster.local"
+              value: "http://virtool-api-web-service.default.svc.cluster.local"
           ports:
             - containerPort: 9900
               protocol: TCP
@@ -36,17 +27,3 @@ spec:
             requests:
               cpu: 100m
               memory: 150M
-      restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ui-service
-spec:
-  type: ClusterIP
-  selector:
-    app: VirtoolUI
-  ports:
-    - name: http
-      port: 80
-      targetPort: 9900
