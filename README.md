@@ -1,86 +1,151 @@
 # Dev
 
+## Dependencies
 
-
-## Cluster setup
-
-### Dependencies
-
-- Docker engine
+- Docker Engine
+- `git`
+- Helm
+- `kubectl`
 - Minikube
 - Tilt
-- Kubectl
-- Helm
-- nfs-kernel-server
-- `git`
 
-### Initial Setup
+## Quick Start
 
 1. Clone the repository to your local machine
    ```
    git clone https://github.com/virtool/dev.git
    ```
-   
-2. Add the following line to your `/etc/hosts` file to enable access to 
-   the cluster from your local machine
-   ```
-   192.168.49.2 virtool.local
-   ```
 
-### Create a Cluster
-
-1. Start the Minikube Cluster
+2. Create a Cluster
 
    ```shell
-   minikube start --cpus 8 --memory 16000
+   bash scripts/init.sh
    ```
+   
+   This:
 
-2. Enable ingress addon
+   * Deletes any existing cluster.
+   * Creates a cluster using preset resource limits.
+   * Enables the ingress and metrics addons for Minikube.
+   
+   You can run commands from `init.sh` individually if you want to customize the
+   cluster.
+
+3. Add the cluster IP to `/etc/hosts`:
 
    ```shell
-   minikube addons enable ingress
+   bash scripts/hosts.sh
    ```
    
-3. Navigate into your `dev` directory and start tilt with the following command
+   This puts the IP for the Minikube cluster in `/etc/hosts` for `virtool.local`. This
+   will make requests to `virtool.local` on your machine route to the cluster.
 
-   ```shell 
-   tilt up 
+4. Start Tilt
+
+   ```shell
+   tilt up
    ```
    
-In a few minutes you cluster should be reachable at: [http://virtool.local](http://virtool.local)
+   Tilt manages the Kubernetes development environment. It starts all necessary services
+   (KEDA, MongoDB, OpenFGA, PostgreSQL, Redis) and the Virtool workloads and services.
 
+## Tilt
 
-### Delete a Cluster
+### Stopping
 
-It may be necessary to start with a fresh cluster. Delete your cluster with:
-```shell
-minikube delete
+You can bring all resources down with `tilt down` and bring them back up with `tilt up`.
+
+We find it is necessary to run `tilt down` before `minikube stop` for the cluster to
+stop cleanly.
+
+### Live Editing
+
+Use the `tilt up -- --to-edit <resource>` command to live edit a resource.
+
+This substitutes the image with one built from a local Dockerfile.
+
+For it to work, you must have the repository cloned as a sibling directory to the `dev`
+repository. Your parent directory should look like this and include clones of any
+repositories you want to live edit:
+
+```
+├── dev
+├── virtool
+├── virtool-ui
+├── workflow-create-sample
+├── workflow-iimi
+└── workflow-pathoscope
 ```
 
-This may take some time. Once it is complete, you can start a new cluster following the
-instructions for creating a cluster.
+_Some repositories are not shown in this example._
 
+**`virtool/virtool`**
 
+```shell
+tilt up -- --to-edit backend
+```
+
+For `virtool/virtool` resources, you have to manually update the resources in Tilt to
+trigger an image build.
+
+Resources affected by the image and `--to-edit backend` flag:
+
+* `api-jobs`
+* `api-web`
+* `migration`
+* `task-runner`
+* `task-spawner`
+
+**`virtool/virtool-ui`**
+
+```shell
+tilt up -- --to-edit ui
+```
+
+Changes to code in the `virtool/virtool-ui` repository will be immediately reflected
+in the running UI.
+
+Only the `ui` resource is affected by the `--to-edit ui` flag.
+
+**Workflows**
+
+Any workflow repository can be live edited with the following command:
+
+```shell
+tilt up -- --to-edit <workflow>
+```
+
+Where `workflow` is one of:
+
+* `build-index`
+* `create-sample`
+* `create-subtraction`
+* `iimi`
+* `pathoscope`
+* `nuvs`
+
+Every time the repository changes, the image will be rebuilt.
+
+```shell
 
 ## Update images
 
-This repo includes and auto image updater that will fetch the latest version of every virtool image and update their respective YAML files.
+We provide an easy way to update the Virtool container images in the cluster.
 
-### Requirements
+### Tilt
 
-  - Have poetry installed on your local machine
-  - Python +3.10
+Click the 'Pull' button in the top-right of the navigation bar in the Tilt UI.
 
-### Usage
+### Bash
 
-1. Install dependencies
-   ```shell
-   poetry install
-   ```
-2. Run the updater
+```shell
+bash scripts/pull.sh
+```
 
-   ```shell 
-   poetry run python ./update/run.py
-   ```
+## Wiping the Cluster
 
+If you need to start fresh, you can just run `init.sh` again:
 
+```shell
+bash scripts/init.sh
+```
