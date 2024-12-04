@@ -1,0 +1,4 @@
+# The Iimi image contains a Poetry environment and needs this special command.
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/command
+  value: ["poetry", "run", "run-workflow"]

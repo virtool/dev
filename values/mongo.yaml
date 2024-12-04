@@ -1,5 +1,6 @@
+arbiter:
+  enabled: false
 architecture: replicaset
-replicaCount: 1
 auth:
   replicaSetKey: virtool
   rootPassword: virtool
@@ -9,8 +10,9 @@ auth:
     - virtool
   databases:
     - virtool
-arbiter:
-  enabled: false
+image:
+  tag: 7.0.5-debian-12-r5
+replicaCount: 1
 resources:
   requests:
     cpu: 500m

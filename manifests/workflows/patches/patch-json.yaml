@@ -1,0 +1,33 @@
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/command
+  value: [run-workflow]
+
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/env/-1
+  value:
+    name: VT_JOBS_API_CONNECTION_STRING
+    value: http://virtool-api-jobs-service.default.svc.cluster.local
+
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/env/-1
+  value:
+    name: VT_REDIS_CONNECTION_STRING
+    value: redis://:virtool@redis-master.default.svc.cluster.local
+
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/env/-1
+  value:
+      name: VT_REDIS_HOST
+      value: redis-master.default.svc.cluster.local:6379
+
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/env/-1
+  value:
+    name: VT_REDIS_PASSWORD
+    value: virtool
+
+- op: add
+  path: /spec/jobTargetRef/template/spec/containers/0/env/-1
+  value:
+    name: VT_TIMEOUT
+    value: "120"

@@ -1,0 +1,15 @@
+- op: add
+  path: /spec/triggers/0/type
+  value: redis
+
+- op: add
+  path: /spec/triggers/0/metadata/address
+  value: redis-master.default.svc.cluster.local:6379
+
+- op: add
+  path: /spec/triggers/0/metadata/passwordFromEnv
+  value: VT_REDIS_PASSWORD
+
+- op: add
+  path: /spec/triggers/0/metadata/listLength
+  value: "1"

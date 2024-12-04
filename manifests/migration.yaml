@@ -3,13 +3,13 @@ kind: Job
 metadata:
   name: virtool-migration
   labels:
-    app: VirtoolMigration
+    app: virtool-migration
 spec:
   backoffLimit: 0
   template:
     metadata:
       labels:
-        app: VirtoolMigration
+        app: virtool-migration
     spec:
       restartPolicy: Never
       containers:

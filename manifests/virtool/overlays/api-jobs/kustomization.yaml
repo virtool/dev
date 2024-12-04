@@ -1,0 +1,20 @@
+labels:
+  - pairs:
+      app: virtool-api-jobs
+    includeTemplates: true
+    includeSelectors: true
+
+patches:
+  - path: deployment.yaml
+    target:
+      kind: Deployment
+    options:
+      allowNameChange: true
+  - path: service.yaml
+    target:
+      kind: Service
+    options:
+      allowNameChange: true
+
+resources:
+  - ../../base

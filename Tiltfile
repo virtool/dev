@@ -8,37 +8,54 @@ cfg = config.parse()
 to_edit = cfg.get('to-edit', [])
 persistence = cfg.get('persistence', True)
 
-# Backing Services and Components
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
+load('ext://uibutton', 'cmd_button', 'location')
+
+cmd_button('fart',
+    argv=['bash', 'scripts/pull.sh'],
+    icon_name="cloud_download",
+    location=location.NAV,
+    text='Pull',
+)
 
 helm_repo('bitnami', 'https://charts.bitnami.com/bitnami', labels=['helm'])
 helm_repo('kedacore', 'https://kedacore.github.io/charts', labels=['helm'])
 
-watch_file("manifests/mongo_values.yaml")
+watch_file("values/mongo.yaml")
+watch_file("values/postgresql.yaml")
+watch_file("values/redis.yaml")
 
-helm_resource('keda', 'kedacore/keda', labels=['keda'])
+helm_resource(
+    'keda',
+    'kedacore/keda',
+    labels=['keda']
+)
 
 helm_resource(
     'mongo',
     'bitnami/mongodb',
     flags=[
-        "-f", 'manifests/mongo_values.yaml',
-        "--set", "image.tag=7.0.5-debian-12-r5",
+        "-f", 'values/mongo.yaml',
         "--set", "persistence.enabled={}".format(persistence)
     ],
     labels=['data'],
     port_forwards=[27017]
 )
 
+k8s_yaml('manifests/openfga.yaml')
+k8s_resource(
+    'openfga',
+    labels=['data'],
+    port_forwards=[8080, 3000],
+    resource_deps=["postgresql"]
+)
+
 helm_resource(
     'postgresql',
     'bitnami/postgresql',
     flags=[
-        "--set", "image.tag=15.6.0-debian-11-r16",
-        "--set", "auth.username=virtool",
-        "--set", "auth.password=virtool",
-        "--set", "auth.database=virtool",
-        "--set", "primary.persistence.enabled={}".format(persistence)
+        '-f', 'values/postgresql.yaml',
+        '--set', 'primary.persistence.enabled={}'.format(persistence)
     ],
     labels=['data'],
     port_forwards=[5432]
@@ -48,45 +65,25 @@ helm_resource(
     'redis',
     'bitnami/redis',
     flags=[
-        '--set','image.tag=7.2.1-debian-11-r0',
-        '--set', 'architecture=standalone',
-        '--set', 'auth.password=virtool',
-        '--set', 'master.disableCommands=null',
+        '-f', 'values/redis.yaml',
         '--set', 'master.persistence.enabled={}'.format(persistence)
     ],
     labels=['data'],
     port_forwards=[6379],
 )
 
-
 k8s_yaml('manifests/storage.yaml')
-k8s_resource(new_name='storage', labels=['data'], objects=['pv-virtool', 'pvc-virtool'])
-
-"""OpenFGA"""
-k8s_yaml('manifests/openfga-migration.yaml')
-k8s_resource("openfga-migration", labels=['migration'], resource_deps=["postgresql"])
-
-k8s_yaml('manifests/openfga.yaml')
 k8s_resource(
-    'openfga',
     labels=['data'],
-    port_forwards=[8080, 3000],
-    resource_deps=["openfga-migration"]
+    new_name='storage',
+    objects=['pv-virtool', 'pvc-virtool']
 )
 
 if 'migration' in to_edit:
     docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
 
-k8s_yaml('manifests/migration.yaml')
-k8s_resource(
-    'virtool-migration',
-    labels=['migration'],
-    resource_deps=["mongo", "openfga", "postgresql", "redis", "storage"],
-    trigger_mode=TRIGGER_MODE_MANUAL
-)
-
 k8s_yaml('manifests/ingress.yaml')
-k8s_resource(labels=['virtool'], new_name='ingress', objects=['ingress'])
+k8s_yaml('manifests/migration.yaml')
 
 docker_prune_settings(max_age_mins=1)
 
@@ -103,14 +100,6 @@ if 'ui' in to_edit:
       ]
     )
 
-k8s_yaml('manifests/ui.yaml')
-k8s_resource(
-    'ui',
-    labels=['virtool'],
-    port_forwards=[9900],
-    resource_deps=["api-web"]
-)
-
 if 'backend' in to_edit:
     custom_build(
       'ghcr.io/virtool/virtool',
@@ -118,46 +107,63 @@ if 'backend' in to_edit:
       ['../virtool'],
     )
 
-api_resource_deps=["mongo", "postgresql", "openfga", "redis", "storage", "virtool-migration"]
+k8s_yaml(kustomize('manifests/ui'))
+k8s_yaml(kustomize('manifests/virtool'))
 
-k8s_yaml('manifests/api-web.yaml')
 k8s_resource(
-    'api-web',
-    labels=['virtool'],
-    port_forwards=[9950],
-    resource_deps=api_resource_deps,
-    trigger_mode=TRIGGER_MODE_MANUAL
-)
-
-k8s_yaml('manifests/api-jobs.yaml')
-k8s_resource(
-    'api-jobs',
+    'virtool-api-jobs',
     labels=['virtool'],
     port_forwards=["9960:9950"],
-    resource_deps=api_resource_deps,
+    new_name="api-jobs",
+    resource_deps=["migration"],
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-k8s_yaml('manifests/task-runner.yaml')
 k8s_resource(
-    'task-runner',
+    'virtool-api-web',
     labels=['virtool'],
+    new_name="api-web",
+    port_forwards=[9950],
+    resource_deps=["migration"],
+    trigger_mode=TRIGGER_MODE_MANUAL
+)
+
+k8s_resource(labels=['virtool'], new_name='ingress', objects=['ingress'])
+
+k8s_resource(
+    'virtool-migration',
+    labels=['virtool'],
+    new_name="migration",
+    resource_deps=["mongo", "openfga", "postgresql", "redis", "storage"],
+    trigger_mode=TRIGGER_MODE_MANUAL
+)
+
+k8s_resource(
+    'virtool-task-runner',
+    labels=['virtool'],
+    new_name="task-runner",
     port_forwards=["9970:9950"],
-    resource_deps=api_resource_deps,
+    resource_deps=["migration"],
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-k8s_yaml('manifests/task-spawner.yaml')
 k8s_resource(
-    'task-spawner',
+    'virtool-task-spawner',
     labels=['virtool'],
-    resource_deps=api_resource_deps,
+    new_name="task-spawner",
+    resource_deps=["task-runner"],
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-"""Jobs"""
-jobs = ['shared.yaml', 'build-index.yaml','create-sample.yaml']
+k8s_resource(
+    'virtool-ui',
+    labels=['virtool'],
+    new_name="ui",
+    port_forwards=[9900],
+    resource_deps=["api-web"]
+)
 
+"""Workflows"""
 if "build-index" in to_edit:
     docker_build(
         'ghcr.io/virtool/build-index',
@@ -200,57 +206,56 @@ if "pathoscope" in to_edit:
         target='base'
     )
 
+k8s_kind(
+    'ScaledJob',
+    image_json_path='{.spec.jobTargetRef.template.spec.containers[0].image}'
+)
+
+k8s_yaml(kustomize('manifests/workflows'))
+
 scaled_job_deps = ['keda', 'redis']
 
-k8s_kind('ScaledJob', image_json_path='{.spec.jobTargetRef.template.spec.containers[0].image}')
-
-k8s_yaml('manifests/jobs/shared.yaml')
-k8s_resource(objects=['virtool-jobs-config'], labels=["jobs"], new_name="shared-config")
-
-k8s_yaml('manifests/jobs/build-index.yaml')
 k8s_resource(
-    "virtool-job-build-index",
-    labels=["jobs"],
+    "virtool-workflow-build-index",
+    labels=["workflows"],
     new_name="build-index",
     resource_deps=scaled_job_deps
 )
 
-k8s_yaml('manifests/jobs/create-sample.yaml')
 k8s_resource(
-    'virtool-job-create-sample',
-    labels=["jobs"],
+    'virtool-workflow-create-sample',
+    labels=["workflows"],
     new_name="create-sample",
     resource_deps=scaled_job_deps
 )
 
-k8s_yaml('manifests/jobs/create-subtraction.yaml')
+
 k8s_resource(
-    'virtool-job-create-subtraction',
-    labels=["jobs"],
+    'virtool-workflow-create-subtraction',
+    labels=["workflows"],
     new_name="create-subraction",
     resource_deps=scaled_job_deps
 )
 
-k8s_yaml('manifests/jobs/iimi.yaml')
+
 k8s_resource(
-    'virtool-job-iimi',
-    labels=["jobs"],
+    'virtool-workflow-iimi',
+    labels=["workflows"],
     new_name="iimi",
     resource_deps=scaled_job_deps
 )
 
-k8s_yaml('manifests/jobs/nuvs.yaml')
+
 k8s_resource(
-    'virtool-job-nuvs',
-    labels=["jobs"],
+    'virtool-workflow-nuvs',
+    labels=["workflows"],
     new_name="nuvs",
     resource_deps=scaled_job_deps
 )
 
-k8s_yaml('manifests/jobs/pathoscope.yaml')
 k8s_resource(
-    'virtool-job-pathoscope',
-    labels=["jobs"],
+    'virtool-workflow-pathoscope',
+    labels=["workflows"],
     new_name="pathoscope",
     resource_deps=scaled_job_deps
 )

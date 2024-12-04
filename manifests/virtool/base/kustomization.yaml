@@ -1,0 +1,14 @@
+images:
+  - name: ghcr.io/virtool/virtool
+    newTag: 28.2.1
+
+labels:
+  - pairs:
+      component: server
+      part-of: virtool
+
+namePrefix: virtool-
+
+resources:
+  - deployment.yaml
+  - service.yaml

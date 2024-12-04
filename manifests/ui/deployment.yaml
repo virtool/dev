@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/virtool/ui:latest
+          name: virtool-ui
+          command: ["npm", "run", "server"]
+          env:
+            - name: VT_UI_PORT
+              value: "9900"
+            - name: VT_UI_HOST
+              value: "0.0.0.0"
+            - name: VT_UI_API_URL
+              value: "http://virtool-api-web-service.default.svc.cluster.local"
+          ports:
+            - containerPort: 9900
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M

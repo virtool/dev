@@ -1,0 +1,5 @@
+resources:
+  - overlays/api-jobs
+  - overlays/api-web
+  - overlays/task-runner
+  - overlays/task-spawner
