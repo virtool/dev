@@ -6,41 +6,48 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-# Virtool
-repo_name="virtool"
+echo "Server"
 
-url="https://api.github.com/repos/virtool/${repo_name}/releases/latest"
+update_tag() {
+    local repo_name=$1
+    local file_path=$2
 
-# Fetch the latest release tag name
-tag_name=$(curl -s "$url" | jq -r '.tag_name')
+    # Fetch the latest release tag name
+    local url="https://api.github.com/repos/virtool/${repo_name}/releases/latest"
+    local tag_name=$(curl -s "$url" | jq -r '.tag_name')
 
-# File to update
-file_path="manifests/virtool/base/kustomization.yaml"
+    # Update the file with the fetched tag
+    if [[ -f "$file_path" ]]; then
+        sed -i "s/newTag: [0-9.]\+/newTag: $tag_name/" "$file_path"
+        echo "User tag '$tag_name' for $file_path"
+    else
+        echo "Error: File $file_path not found."
+        exit 1
+    fi
+}
 
-# Update the file with the fetched tag
-if [[ -f "$file_path" ]]; then
-    sed -i "s/newTag: [0-9.]\+/newTag: $tag_name/" "$file_path"
-    echo "Updated $file_path with new tag: $tag_name"
-else
-    echo "Error: File $file_path not found."
-    exit 1
-fi
+update_tag "virtool" "manifests/virtool/base/kustomization.yaml"
+update_tag "virtool-ui" "manifests/ui/kustomization.yaml"
 
-# UI
-url="https://api.github.com/repos/virtool/virtool-ui/releases/latest"
+echo ""
+echo "Workflows"
+echo ""
 
-# Fetch the latest release tag name
-tag_name=$(curl -s "$url" | jq -r '.tag_name')
+for workflow_name in "build-index" "create-sample" "create-subtraction" "iimi" "nuvs" "pathoscope"; do
+    url="https://api.github.com/repos/virtool/workflow-${workflow_name}/releases/latest"
 
-# File to update
-file_path="manifests/ui/kustomization.yaml"
+    # Fetch the latest release tag name
+    tag_name=$(curl -s "$url" | jq -r '.tag_name')
 
-# Update the file with the fetched tag
-if [[ -f "$file_path" ]]; then
-    sed -i "s/newTag: [0-9.]\+/newTag: $tag_name/" "$file_path"
-    echo "Updated $file_path with new tag: $tag_name"
-else
-    echo "Error: File $file_path not found."
-    exit 1
-fi
+    # File to update
+    file_path="manifests/workflows/${workflow_name}.yaml"
 
+    # Update the file with the fetched tag
+    if [[ -f "$file_path" ]]; then
+        sed -i "s/${workflow_name}:[0-9.]\+/${workflow_name}:${tag_name}/" "$file_path"
+        echo "Using tag '$tag_name' for $file_path"
+    else
+        echo "Error: File $file_path not found."
+        exit 1
+    fi
+done
