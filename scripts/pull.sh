@@ -9,7 +9,7 @@ fi
 fetch_and_update() {
     local repo=$1
     local file=$2
-    local key=$3
+    local prefix=$3
 
     # Fetch the latest release tag
     local url="https://api.github.com/repos/${repo}/releases/latest"
@@ -17,7 +17,7 @@ fetch_and_update() {
 
     # Update the file if it exists
     if [[ -f "$file" ]]; then
-        sed -i "s/${key}:[0-9.]\+/${key}:${tag}/" "$file"
+        sed -i "s/${prefix}[0-9.]\+/${prefix}${tag}/" "$file"
         echo "Using tag '$tag' for $file"
     else
         echo "Error: File $file not found."
@@ -28,13 +28,13 @@ fetch_and_update() {
 echo "Server"
 echo ""
 
-fetch_and_update "virtool/virtool" "manifests/virtool/base/kustomization.yaml" "newTag"
-fetch_and_update "virtool/virtool-ui" "manifests/ui/kustomization.yaml" "newTag"
+fetch_and_update "virtool/virtool" "manifests/virtool/base/kustomization.yaml" "newTag: "
+fetch_and_update "virtool/virtool-ui" "manifests/ui/kustomization.yaml" "newTag: "
 
 echo ""
 echo "Workflows"
 echo ""
 
 for workflow in "build-index" "create-sample" "create-subtraction" "iimi" "nuvs" "pathoscope"; do
-    fetch_and_update "virtool/workflow-${workflow}" "manifests/workflows/${workflow}.yaml" "${workflow}"
+    fetch_and_update "virtool/workflow-${workflow}" "manifests/workflows/${workflow}.yaml" "${workflow}:"
 done
