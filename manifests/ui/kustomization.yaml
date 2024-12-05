@@ -1,6 +1,6 @@
 images:
   - name: ghcr.io/virtool/ui
-    newTag: 6.19.3
+    newTag: 6.19.4
 
 labels:
   - pairs:
