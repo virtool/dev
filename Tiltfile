@@ -91,12 +91,12 @@ docker_prune_settings(max_age_mins=1)
 if 'ui' in to_edit:
     docker_build(
       'ghcr.io/virtool/ui',
-      '../ui/',
+      '../virtool-ui/',
       entrypoint='npx vite serve --host 0.0.0.0 --port 9900',
       target='dev',
       live_update=[
-        fall_back_on(['../ui/package.json', '../ui/package-lock.json']),
-        sync('../ui/src', '/build/src')
+        fall_back_on(['../virtool-ui/package.json', '../virtool-ui/package-lock.json']),
+        sync('../virtool-ui/src', '/build/src')
       ]
     )
 
@@ -128,7 +128,12 @@ k8s_resource(
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
-k8s_resource(labels=['virtool'], new_name='ingress', objects=['ingress'])
+k8s_resource(
+    labels=['virtool'],
+    new_name='ingress',
+    objects=['ingress'],
+    resource_deps=["api-web", "ui"]
+)
 
 k8s_resource(
     'virtool-migration',
