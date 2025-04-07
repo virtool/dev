@@ -18,5 +18,7 @@ spec:
     storage: 40Gi
   accessModes:
     - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
   hostPath:
     path: /virtool/data
