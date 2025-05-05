@@ -28,7 +28,8 @@ watch_file("values/redis.yaml")
 helm_resource(
     'keda',
     'kedacore/keda',
-    labels=['keda']
+    labels=['keda'],
+    resource_deps=['kedacore']
 )
 
 helm_resource(
@@ -39,7 +40,8 @@ helm_resource(
         "--set", "persistence.enabled={}".format(persistence)
     ],
     labels=['data'],
-    port_forwards=[27017]
+    port_forwards=[27017],
+    resource_deps=["bitnami"]
 )
 
 k8s_yaml('manifests/openfga.yaml')
@@ -58,7 +60,8 @@ helm_resource(
         '--set', 'primary.persistence.enabled={}'.format(persistence)
     ],
     labels=['data'],
-    port_forwards=[5432]
+    port_forwards=[5432],
+    resource_deps=["bitnami"]
 )
 
 helm_resource(
