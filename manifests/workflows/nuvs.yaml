@@ -11,7 +11,7 @@ spec:
       spec:
         containers:
           - name: workflow-nuvs
-            image: ghcr.io/virtool/nuvs:5.4.1
+            image: ghcr.io/virtool/nuvs:5.4.2
             env:
               - name: VT_PROC
                 value: "4"
