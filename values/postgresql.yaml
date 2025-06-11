@@ -4,3 +4,5 @@ auth:
   password: virtool
 image:
   tag: "15.6.0-debian-11-r16"
+primary:
+  resourcesPreset: "micro"
