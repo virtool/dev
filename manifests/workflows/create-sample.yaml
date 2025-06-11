@@ -14,7 +14,7 @@ spec:
       spec:
         containers:
           - name: workflow-create-sample
-            image: ghcr.io/virtool/create-sample:4.3.3
+            image: ghcr.io/virtool/create-sample:4.3.4
             env:
               - name: VT_PROC
                 value: "2"

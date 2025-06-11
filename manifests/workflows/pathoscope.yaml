@@ -11,7 +11,7 @@ spec:
       spec:
         containers:
           - name: workflow-pathoscope
-            image: ghcr.io/virtool/pathoscope:5.7.1
+            image: ghcr.io/virtool/pathoscope:5.7.2
             env:
               - name: VT_MEM
                 value: "8"
