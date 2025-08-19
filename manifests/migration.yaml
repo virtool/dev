@@ -13,7 +13,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - image: ghcr.io/virtool/virtool:28.0.1
+        - image: ghcr.io/virtool/virtool:31.10.0
           name: virtool-migration
           command: ["virtool", "migration", "apply"]
           env:

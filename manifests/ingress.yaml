@@ -6,27 +6,28 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/proxy-body-size: "10000m"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/api"
 spec:
   rules:
     - host: virtool.local
       http:
         paths:
           - path: /(ws)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: virtool-api-web-service
                 port:
                   number: 80
           - path: /api[/]?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: virtool-api-web-service
                 port:
                   number: 80
           - path: /(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: virtool-ui-service

@@ -14,7 +14,7 @@ spec:
       spec:
         containers:
           - name: virtool-workflow
-            image: ghcr.io/virtool/iimi:0.4.1
+            image: ghcr.io/virtool/iimi:0.4.4
             env:
               - name: VT_MEM
                 value: "4"
