@@ -1,6 +1,6 @@
 images:
   - name: ghcr.io/virtool/virtool
-    newTag: 31.10.1
+    newTag: 32.2.1
 
 labels:
   - pairs:
