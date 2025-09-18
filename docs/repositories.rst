@@ -11,7 +11,6 @@ This is the primary repository for the whole project.
 It contains code for services including the API server.
 
 - Servers for web and job API requests.
-- A service the spawns periodic background tasks at regular intervals.
 - A service the runs tasks on demand.
 - CLI commands for creating, running, and managing data migrations.
 

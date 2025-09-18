@@ -12,6 +12,7 @@
 ## Quick Start
 
 1. Clone the repository to your local machine
+
    ```
    git clone https://github.com/virtool/dev.git
    ```
@@ -21,13 +22,12 @@
    ```shell
    bash scripts/init.sh
    ```
-   
-   This:
 
-   * Deletes any existing cluster.
-   * Creates a cluster using preset resource limits.
-   * Enables the ingress and metrics addons for Minikube.
-   
+   This:
+   - Deletes any existing cluster.
+   - Creates a cluster using preset resource limits.
+   - Enables the ingress and metrics addons for Minikube.
+
    You can run commands from `init.sh` individually if you want to customize the
    cluster.
 
@@ -36,7 +36,7 @@
    ```shell
    bash scripts/hosts.sh
    ```
-   
+
    This puts the IP for the Minikube cluster in `/etc/hosts` for `virtool.local`. This
    will make requests to `virtool.local` on your machine route to the cluster.
 
@@ -45,7 +45,7 @@
    ```shell
    tilt up
    ```
-   
+
    Tilt manages the Kubernetes development environment. It starts all necessary services
    (KEDA, MongoDB, OpenFGA, PostgreSQL, Redis) and the Virtool workloads and services.
 
@@ -90,11 +90,10 @@ trigger an image build.
 
 Resources affected by the image and `--to-edit backend` flag:
 
-* `api-jobs`
-* `api-web`
-* `migration`
-* `task-runner`
-* `task-spawner`
+- `api-jobs`
+- `api-web`
+- `migration`
+- `task-runner`
 
 **`virtool/virtool-ui`**
 
@@ -117,16 +116,16 @@ tilt up -- --to-edit <workflow>
 
 Where `workflow` is one of:
 
-* `build-index`
-* `create-sample`
-* `create-subtraction`
-* `iimi`
-* `pathoscope`
-* `nuvs`
+- `build-index`
+- `create-sample`
+- `create-subtraction`
+- `iimi`
+- `pathoscope`
+- `nuvs`
 
 Every time the repository changes, the image will be rebuilt.
 
-```shell
+````shell
 
 ## Update images
 
@@ -140,7 +139,7 @@ Click the 'Pull' button in the top-right of the navigation bar in the Tilt UI.
 
 ```shell
 bash scripts/pull.sh
-```
+````
 
 ## Wiping the Cluster
 
@@ -149,3 +148,4 @@ If you need to start fresh, you can just run `init.sh` again:
 ```shell
 bash scripts/init.sh
 ```
+
