@@ -14,7 +14,7 @@ spec:
       spec:
         containers:
           - name: workflow-build-index
-            image: ghcr.io/virtool/build-index:5.4.6
+            image: ghcr.io/virtool/build-index:5.4.8
             env:
               - name: VT_PROC
                 value: "2"

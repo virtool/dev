@@ -79,43 +79,78 @@ def get_latest_virtool_workflow_version():
     return None
 
 
+def get_current_virtool_workflow_version(repo_path):
+    """Get the current virtool-workflow version from pyproject.toml."""
+    pyproject_path = repo_path / "pyproject.toml"
+    if not pyproject_path.exists():
+        return None
+    
+    with open(pyproject_path, 'r') as f:
+        content = f.read()
+    
+    import re
+    pattern = r'virtool-workflow\s*=\s*"([^"]*)"'
+    match = re.search(pattern, content)
+    
+    if match:
+        return match.group(1)
+    return None
+
+
 def update_virtool_workflow(repo_path, version):
     """Update virtool-workflow in the specified repository."""
-    print(f"Updating virtool-workflow to {version} in {repo_path}")
-    
     # Check if pyproject.toml exists
     pyproject_path = repo_path / "pyproject.toml"
-    if pyproject_path.exists():
-        # Read current pyproject.toml
-        with open(pyproject_path, 'r') as f:
-            content = f.read()
-        
-        # Update virtool-workflow dependency
-        import re
-        pattern = r'virtool-workflow\s*=\s*"([^"]*)"'
-        match = re.search(pattern, content)
-        
-        if match:
-            old_version = match.group(1)
-            replacement = f'virtool-workflow = "{version}"'
-            updated_content = re.sub(pattern, replacement, content)
-            with open(pyproject_path, 'w') as f:
-                f.write(updated_content)
-            print(f"Updated pyproject.toml with virtool-workflow = \"{version}\"")
-            
-            # Run poetry lock to update the lock file
-            print("Running poetry lock")
-            if not run_command("poetry lock", cwd=repo_path, capture_output=False):
-                print("Failed to run poetry lock")
-                return None
-            
-            return old_version
-        else:
-            print("virtool-workflow dependency not found in pyproject.toml")
-            return None
-    else:
+    if not pyproject_path.exists():
         print("pyproject.toml not found in repository")
         return None
+    
+    # Check current version
+    current_version = get_current_virtool_workflow_version(repo_path)
+    if not current_version:
+        print("virtool-workflow dependency not found in pyproject.toml")
+        return None
+    
+    # Skip if already up-to-date
+    if current_version == version:
+        print(f"virtool-workflow is already at version {version}")
+        return "skip"
+    
+    print(f"Updating virtool-workflow from {current_version} to {version} in {repo_path}")
+    
+    # Read current pyproject.toml
+    with open(pyproject_path, 'r') as f:
+        content = f.read()
+    
+    # Update virtool-workflow dependency
+    import re
+    pattern = r'virtool-workflow\s*=\s*"([^"]*)"'
+    replacement = f'virtool-workflow = "{version}"'
+    updated_content = re.sub(pattern, replacement, content)
+    
+    with open(pyproject_path, 'w') as f:
+        f.write(updated_content)
+    print(f"Updated pyproject.toml with virtool-workflow = \"{version}\"")
+    
+    # Run poetry lock to update the lock file (skip cache for virtool-workflow)
+    print("Running poetry lock")
+    if not run_command("poetry lock --no-cache", cwd=repo_path, capture_output=False):
+        print("Failed to run poetry lock")
+        return None
+    
+    return current_version
+
+
+def branch_exists(repo_path, branch_name):
+    """Check if a branch exists."""
+    result = run_command(f"git rev-parse --verify {branch_name}", cwd=repo_path, capture_output=True)
+    return result is not None
+
+
+def has_staged_changes(repo_path):
+    """Check if there are staged changes."""
+    result = run_command("git diff --cached --name-only", cwd=repo_path, capture_output=True)
+    return result and result.strip()
 
 
 def create_branch_and_commit(repo_path, version, old_version, custom_message=None):
@@ -123,7 +158,8 @@ def create_branch_and_commit(repo_path, version, old_version, custom_message=Non
     branch_name = f"virtool-workflow-{version}"
     
     # Delete existing branch if it exists
-    run_command(f"git branch -D {branch_name}", cwd=repo_path, capture_output=True)
+    if branch_exists(repo_path, branch_name):
+        run_command(f"git branch -D {branch_name}", cwd=repo_path, capture_output=True)
     
     # Create and checkout new branch
     print(f"Creating branch {branch_name}")
@@ -135,6 +171,11 @@ def create_branch_and_commit(repo_path, version, old_version, custom_message=Non
     print("Adding pyproject.toml and poetry.lock")
     if not run_command("git add pyproject.toml poetry.lock", cwd=repo_path, capture_output=False):
         print("Failed to add files")
+        return None
+    
+    # Check if there are staged changes
+    if not has_staged_changes(repo_path):
+        print("No changes to commit")
         return None
     
     # Commit changes
@@ -151,8 +192,19 @@ def create_branch_and_commit(repo_path, version, old_version, custom_message=Non
     return branch_name
 
 
+def remote_branch_exists(repo_path, branch_name):
+    """Check if a branch exists on the remote."""
+    result = run_command(f"git ls-remote --heads origin {branch_name}", cwd=repo_path, capture_output=True)
+    return result and result.strip()
+
+
 def push_and_create_pr(repo_path, branch_name, version):
     """Push the branch and create a GitHub PR."""
+    # Delete remote branch if it exists
+    if remote_branch_exists(repo_path, branch_name):
+        print(f"Deleting existing remote branch {branch_name}")
+        run_command(f"git push origin --delete {branch_name}", cwd=repo_path, capture_output=True)
+    
     # Push the branch with upstream tracking
     print(f"Pushing branch {branch_name}")
     if not run_command(f"git push -u origin {branch_name}", cwd=repo_path, capture_output=False):
@@ -193,7 +245,13 @@ def process_repository(repo_name, parent_dir, version, custom_message=None):
         # Update virtool-workflow
         old_version = update_virtool_workflow(repo_path, version)
         if not old_version:
-            return False
+            print(f"Skipping {repo_name} - no virtool-workflow dependency or other issue")
+            return "skip"
+        
+        # Skip if already up-to-date
+        if old_version == "skip":
+            print(f"Repository {repo_name} is already up-to-date")
+            return "skip"
         
         # Create branch and commit
         branch_name = create_branch_and_commit(repo_path, version, old_version, custom_message)
@@ -235,11 +293,15 @@ def main():
     
     # Process each repository
     successful_repos = []
+    skipped_repos = []
     failed_repos = []
     
     for repo_name in WORKFLOW_REPOS:
-        if process_repository(repo_name, parent_dir, latest_version, args.message):
+        result = process_repository(repo_name, parent_dir, latest_version, args.message)
+        if result is True:
             successful_repos.append(repo_name)
+        elif result == "skip":
+            skipped_repos.append(repo_name)
         else:
             failed_repos.append(repo_name)
     
@@ -248,6 +310,11 @@ def main():
     print(f"Successfully processed: {len(successful_repos)} repositories")
     for repo in successful_repos:
         print(f"  ✓ {repo}")
+    
+    if skipped_repos:
+        print(f"Skipped: {len(skipped_repos)} repositories")
+        for repo in skipped_repos:
+            print(f"  - {repo}")
     
     if failed_repos:
         print(f"Failed to process: {len(failed_repos)} repositories")

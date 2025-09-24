@@ -17,10 +17,6 @@ patches:
   - path: patches/patch-trigger.yaml
     target:
       kind: ScaledJob
-  - path: patches/patch-iimi.yaml
-    target:
-      kind: ScaledJob
-      labelSelector: "app.virtool.ca/workflow-name=iimi"
 
 resources:
   - build-index.yaml

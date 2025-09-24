@@ -156,14 +156,6 @@ k8s_resource(
 )
 
 k8s_resource(
-    'virtool-task-spawner',
-    labels=['virtool'],
-    new_name="task-spawner",
-    resource_deps=["task-runner"],
-    trigger_mode=TRIGGER_MODE_MANUAL
-)
-
-k8s_resource(
     'virtool-ui',
     labels=['virtool'],
     new_name="ui",
@@ -265,5 +257,6 @@ k8s_resource(
     'virtool-workflow-pathoscope',
     labels=["workflows"],
     new_name="pathoscope",
-    resource_deps=scaled_job_deps
+    resource_deps=scaled_job_deps,
+    trigger_mode=TRIGGER_MODE_MANUAL
 )
