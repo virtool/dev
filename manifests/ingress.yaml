@@ -8,6 +8,10 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "10000m"
     nginx.ingress.kubernetes.io/x-forwarded-prefix: "/api"
 spec:
+  tls:
+    - hosts:
+        - virtool.local
+      secretName: mkcert
   rules:
     - host: virtool.local
       http:

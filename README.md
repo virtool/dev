@@ -40,7 +40,22 @@
    This puts the IP for the Minikube cluster in `/etc/hosts` for `virtool.local`. This
    will make requests to `virtool.local` on your machine route to the cluster.
 
-4. Start Tilt
+4. Set up HTTPS with mkcert:
+
+   ```shell
+   # Install mkcert if not already installed
+   mkcert -install
+
+   # Create certificate for virtool.local
+   mkcert virtool.local
+
+   # Create Kubernetes TLS secret
+   kubectl create secret tls mkcert --cert=virtool.local.pem --key=virtool.local-key.pem
+   ```
+
+   This enables HTTPS for `https://virtool.local` using a locally trusted certificate.
+
+5. Start Tilt
 
    ```shell
    tilt up
