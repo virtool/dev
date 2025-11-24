@@ -21,9 +21,7 @@ cmd_button('pull',
 helm_repo('bitnami', 'https://charts.bitnami.com/bitnami', labels=['helm'])
 helm_repo('kedacore', 'https://kedacore.github.io/charts', labels=['helm'])
 
-watch_file("values/mongo.yaml")
-watch_file("values/postgresql.yaml")
-watch_file("values/redis.yaml")
+
 
 helm_resource(
     'keda',
@@ -32,16 +30,18 @@ helm_resource(
     resource_deps=['kedacore']
 )
 
-helm_resource(
-    'mongo',
-    'bitnami/mongodb',
-    flags=[
-        "-f", 'values/mongo.yaml',
-        "--set", "persistence.enabled={}".format(persistence)
-    ],
+k8s_yaml('manifests/db/mongo.yaml')
+k8s_resource(
+    "mongo",
     labels=['data'],
-    port_forwards=[27017],
-    resource_deps=["bitnami"]
+)
+
+
+k8s_yaml('manifests/db/postgres.yaml')
+k8s_resource(
+    "postgres",
+    labels=['data'],
+    objects=['pv-postgres', 'pvc-postgres']
 )
 
 k8s_yaml('manifests/openfga.yaml')
@@ -49,31 +49,17 @@ k8s_resource(
     'openfga',
     labels=['data'],
     port_forwards=[8080, 3000],
-    resource_deps=["postgresql"]
+    resource_deps=["postgres"]
 )
 
-helm_resource(
-    'postgresql',
-    'bitnami/postgresql',
-    flags=[
-        '-f', 'values/postgresql.yaml',
-        '--set', 'primary.persistence.enabled={}'.format(persistence)
-    ],
-    labels=['data'],
-    port_forwards=[5432],
-    resource_deps=["bitnami"]
-)
-
-helm_resource(
+k8s_yaml('manifests/db/redis.yaml')
+k8s_resource(
     'redis',
-    'bitnami/redis',
-    flags=[
-        '-f', 'values/redis.yaml',
-        '--set', 'master.persistence.enabled={}'.format(persistence)
-    ],
     labels=['data'],
-    port_forwards=[6379],
+    objects=['pv-redis', 'pvc-redis']
 )
+
+
 
 k8s_yaml('manifests/storage.yaml')
 k8s_resource(

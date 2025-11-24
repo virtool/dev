@@ -20,7 +20,7 @@ spec:
             - name: VT_HOST
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING
-              value: "mongodb://virtool:virtool@mongo-mongodb-headless.default.svc.cluster.local/virtool"
+              value: "mongodb://virtool:virtool@mongo-svc.default.svc.cluster.local/virtool"
             - name: VT_OPENFGA_HOST
               value: "openfga.default.svc.cluster.local"
             - name: VT_OPENFGA_SCHEME
