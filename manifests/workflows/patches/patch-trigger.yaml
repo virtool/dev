@@ -4,7 +4,7 @@
 
 - op: add
   path: /spec/triggers/0/metadata/address
-  value: redis-master.default.svc.cluster.local:6379
+  value: redis.default.svc.cluster.local:6379
 
 - op: add
   path: /spec/triggers/0/metadata/passwordFromEnv

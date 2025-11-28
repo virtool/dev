@@ -3,25 +3,69 @@ kind: ConfigMap
 metadata:
   name: mongo-init-script
 data:
-  init-replicaset.js: |
-    db.getSiblingDB("virtool").createUser({
-      user: "virtool",
-      pwd: "virtool",
-      roles: [{ role: "root", db: "admin" }]
-    });
-    rs.initiate({
-      _id: "rs0",
-      members: [
-        { _id: 0, host: "mongo-0.mongo-svc.default.svc.cluster.local:27017" }
-      ]
-    });
+  setup-mongo.sh: |
+    #!/bin/bash
+    set -e
+
+    echo "Initializing MongoDB replica set..."
+
+    # Wait for MongoDB to be ready
+    until mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+      sleep 1
+    done
+
+    # Initialize replica set
+    mongosh --quiet --eval "
+    try {
+      rs.initiate({
+        _id: 'virtool',
+        members: [
+          { _id: 0, host: 'mongo-0.mongo.default.svc.cluster.local:27017' }
+        ]
+      });
+      print('Replica set initialized successfully');
+    } catch (e) {
+      if (e.code === 23) {
+        print('Replica set already initialized');
+      } else {
+        throw e;
+      }
+    }
+    "
+
+    # Wait for replica set to be ready
+    echo "Waiting for replica set to be ready..."
+    until mongosh --quiet --eval "rs.isMaster().ismaster" | grep -q true; do
+      sleep 1
+    done
+
+    # Create virtool user
+    echo "Creating virtool user..."
+    mongosh virtool --quiet --eval "
+    try {
+      db.createUser({
+        user: 'virtool',
+        pwd: 'virtool',
+        roles: [ { role: 'dbOwner', db: 'virtool' } ]
+      });
+      print('Virtool user created successfully');
+    } catch (e) {
+      if (e.code === 51003) {
+        print('Virtool user already exists');
+      } else {
+        throw e;
+      }
+    }
+    "
+
+    echo "MongoDB replica set setup complete!"
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongo
 spec:
-  serviceName: "mongo-svc"
+  serviceName: "mongo"
   replicas: 1
   selector:
     matchLabels:
@@ -34,18 +78,23 @@ spec:
       containers:
         - name: mongo
           image: mongo:8.0.15-noble
-          command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+          command: ["mongod", "--replSet", "virtool", "--bind_ip_all"]
           ports:
             - containerPort: 27017
           volumeMounts:
             - name: data
               mountPath: /data/db
             - name: init-script
-              mountPath: /docker-entrypoint-initdb.d
+              mountPath: /scripts
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/bash", "/scripts/setup-mongo.sh"]
       volumes:
         - name: init-script
           configMap:
             name: mongo-init-script
+            defaultMode: 0755
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -58,7 +107,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo-svc
+  name: mongo
 spec:
   selector:
     app: mongo

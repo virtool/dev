@@ -20,15 +20,15 @@ spec:
             - name: VT_HOST
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING
-              value: "mongodb://virtool:virtool@mongo-svc.default.svc.cluster.local/virtool"
+              value: "mongodb://virtool:virtool@mongo.default.svc.cluster.local/virtool"
             - name: VT_OPENFGA_HOST
               value: "openfga.default.svc.cluster.local"
             - name: VT_OPENFGA_SCHEME
               value: "http"
             - name: VT_REDIS_CONNECTION_STRING
-              value: "redis://:virtool@redis-master.default.svc.cluster.local"
+              value: "redis://:virtool@redis.default.svc.cluster.local"
             - name: VT_POSTGRES_CONNECTION_STRING
-              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+              value: "postgresql+asyncpg://virtool@postgres.default.svc.cluster.local?password=virtool"
           ports:
             - containerPort: 9950
               protocol: TCP
@@ -39,12 +39,12 @@ spec:
             requests:
               cpu: 300m
               memory: 300M
-#          startupProbe:
-#            httpGet:
-#              path: /
-#              port: 9950
-#            initialDelaySeconds: 3
-#            periodSeconds: 3
+          #          startupProbe:
+          #            httpGet:
+          #              path: /
+          #              port: 9950
+          #            initialDelaySeconds: 3
+          #            periodSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /data

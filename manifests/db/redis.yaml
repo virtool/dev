@@ -15,9 +15,12 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: redis:8.2.2
+        - image: redis:8
           name: redis
           imagePullPolicy: Always
+          args:
+            - --requirepass
+            - virtool
           resources:
             requests:
               cpu: 250m

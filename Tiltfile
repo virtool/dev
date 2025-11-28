@@ -18,10 +18,7 @@ cmd_button('pull',
     text='Pull',
 )
 
-helm_repo('bitnami', 'https://charts.bitnami.com/bitnami', labels=['helm'])
 helm_repo('kedacore', 'https://kedacore.github.io/charts', labels=['helm'])
-
-
 
 helm_resource(
     'keda',
@@ -48,7 +45,6 @@ k8s_yaml('manifests/openfga.yaml')
 k8s_resource(
     'openfga',
     labels=['data'],
-    port_forwards=[8080, 3000],
     resource_deps=["postgres"]
 )
 
@@ -128,7 +124,7 @@ k8s_resource(
     'virtool-migration',
     labels=['virtool'],
     new_name="migration",
-    resource_deps=["mongo", "openfga", "postgresql", "redis", "storage"],
+    resource_deps=["mongo", "openfga", "postgres", "redis", "storage"],
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
