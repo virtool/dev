@@ -22,7 +22,7 @@ spec:
             - name: OPENFGA_DATASTORE_ENGINE
               value: "postgres"
             - name: OPENFGA_DATASTORE_URI
-              value: "postgresql://virtool@postgresql.default.svc.cluster.local/virtool?password=virtool"
+              value: "postgres://virtool@postgres.default.svc.cluster.local/virtool?password=virtool"
       containers:
         - image: openfga/openfga:v0.2.5
           imagePullPolicy: Always
@@ -32,7 +32,7 @@ spec:
             - name: OPENFGA_DATASTORE_ENGINE
               value: "postgres"
             - name: OPENFGA_DATASTORE_URI
-              value: "postgresql://virtool@postgresql.default.svc.cluster.local/virtool?password=virtool"
+              value: "postgres://virtool@postgres.default.svc.cluster.local/virtool?password=virtool"
           ports:
             - containerPort: 8080
               protocol: TCP

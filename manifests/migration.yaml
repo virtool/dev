@@ -13,7 +13,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - image: ghcr.io/virtool/virtool:33.2.3
+        - image: ghcr.io/virtool/virtool:34.1.0
           name: virtool-migration
           command: ["virtool", "migration", "apply"]
           env:
@@ -24,15 +24,15 @@ spec:
             - name: VT_HOST
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING
-              value: "mongodb://virtool:virtool@mongo-mongodb-headless.default.svc.cluster.local/virtool"
+              value: "mongodb://virtool:virtool@mongo.default.svc.cluster.local/virtool"
             - name: VT_OPENFGA_SCHEME
               value: "http"
             - name: VT_OPENFGA_HOST
               value: "openfga.default.svc.cluster.local"
             - name: VT_POSTGRES_CONNECTION_STRING
-              value: "postgresql+asyncpg://virtool@postgresql.default.svc.cluster.local?password=virtool"
+              value: "postgresql+asyncpg://virtool@postgres.default.svc.cluster.local?password=virtool"
             - name: VT_REDIS_CONNECTION_STRING
-              value: "redis://:virtool@redis-master.default.svc.cluster.local"
+              value: "redis://:virtool@redis.default.svc.cluster.local"
           imagePullPolicy: Always
           resources:
             limits:
