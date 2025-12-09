@@ -15,7 +15,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: postgres:15.14-bookworm
+        - image: postgres:15
           name: postgressql
           imagePullPolicy: Always
           resources:
@@ -25,16 +25,32 @@ spec:
             limits:
               cpu: 375m
               memory: 384Mi
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - virtool
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - virtool
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql
           env:
-              - name: POSTGRES_USER
-                value: "virtool"
-              - name: POSTGRES_DB
-                value: virtool
-              - name: POSTGRES_PASSWORD
-                value: virtool
+            - name: POSTGRES_USER
+              value: "virtool"
+            - name: POSTGRES_DB
+              value: virtool
+            - name: POSTGRES_PASSWORD
+              value: virtool
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -57,8 +73,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: pvc-postgres
 spec:
+  storageClassName: standard
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
@@ -71,7 +88,7 @@ spec:
   capacity:
     storage: 5Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
   hostPath:
