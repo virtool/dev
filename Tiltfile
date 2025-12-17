@@ -28,41 +28,24 @@ helm_resource(
 )
 
 k8s_yaml('manifests/db/mongo.yaml')
-k8s_resource(
-    "mongo",
-    labels=['data'],
-)
-
-
 k8s_yaml('manifests/db/postgres.yaml')
-k8s_resource(
-    "postgres",
-    labels=['data'],
-    objects=['pv-postgres', 'pvc-postgres']
-)
-
-k8s_yaml('manifests/openfga.yaml')
-k8s_resource(
-    'openfga',
-    labels=['data'],
-    resource_deps=["postgres"]
-)
-
 k8s_yaml('manifests/db/redis.yaml')
-k8s_resource(
-    'redis',
-    labels=['data'],
-    objects=['pv-redis', 'pvc-redis']
-)
-
-
-
 k8s_yaml('manifests/storage.yaml')
+
 k8s_resource(
-    labels=['data'],
     new_name='storage',
-    objects=['pv-virtool', 'pvc-virtool']
+    objects=[
+        'pv-mongo', 'pvc-mongo',
+        'pv-postgres', 'pvc-postgres',
+        'pv-redis', 'pvc-redis',
+        'pv-virtool', 'pvc-virtool',
+    ],
+    labels=['data']
 )
+
+k8s_resource("mongo", labels=['data'], resource_deps=['storage'])
+k8s_resource("postgres", labels=['data'], resource_deps=['storage'])
+k8s_resource('redis', labels=['data'], resource_deps=['storage'])
 
 if 'migration' in to_edit:
     docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
@@ -124,7 +107,7 @@ k8s_resource(
     'virtool-migration',
     labels=['virtool'],
     new_name="migration",
-    resource_deps=["mongo", "openfga", "postgres", "redis", "storage"],
+    resource_deps=["mongo", "postgres", "redis", "storage"],
     trigger_mode=TRIGGER_MODE_MANUAL
 )
 
