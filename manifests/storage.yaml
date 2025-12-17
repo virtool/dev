@@ -3,6 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: pvc-virtool
 spec:
+  storageClassName: standard
+  volumeName: pv-virtool
   accessModes:
     - ReadWriteMany
   resources:
@@ -20,5 +22,8 @@ spec:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
+  claimRef:
+    name: pvc-virtool
+    namespace: default
   hostPath:
     path: /virtool/data
