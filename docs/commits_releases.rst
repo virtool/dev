@@ -98,5 +98,5 @@ Example:
 * Making changes that require a certain migration to have been applied.
 * Changing configuration options that could break configurations in 
   production and development environments.
-* Making changes that require a certain version of a service like Postgres, Redis, or
-  OpenFGA.
+* Making changes that require a certain version of a service like Postgres, or Redis.
+

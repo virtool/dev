@@ -21,10 +21,6 @@ spec:
               value: "0.0.0.0"
             - name: VT_MONGODB_CONNECTION_STRING
               value: "mongodb://virtool:virtool@mongo.default.svc.cluster.local/virtool"
-            - name: VT_OPENFGA_HOST
-              value: "openfga.default.svc.cluster.local"
-            - name: VT_OPENFGA_SCHEME
-              value: "http"
             - name: VT_REDIS_CONNECTION_STRING
               value: "redis://:virtool@redis.default.svc.cluster.local"
             - name: VT_POSTGRES_CONNECTION_STRING
@@ -39,12 +35,6 @@ spec:
             requests:
               cpu: 300m
               memory: 300M
-          #          startupProbe:
-          #            httpGet:
-          #              path: /
-          #              port: 9950
-          #            initialDelaySeconds: 3
-          #            periodSeconds: 3
           volumeMounts:
             - name: data
               mountPath: /data

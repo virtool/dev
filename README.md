@@ -62,7 +62,7 @@
    ```
 
    Tilt manages the Kubernetes development environment. It starts all necessary services
-   (KEDA, MongoDB, OpenFGA, PostgreSQL, Redis) and the Virtool workloads and services.
+   (KEDA, MongoDB, PostgreSQL, Redis) and the Virtool workloads and services.
 
 ## Tilt
 
@@ -163,4 +163,3 @@ If you need to start fresh, you can just run `init.sh` again:
 ```shell
 bash scripts/init.sh
 ```
-

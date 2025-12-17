@@ -15,7 +15,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-        - image: postgres:15
+        - image: postgres:18
           name: postgressql
           imagePullPolicy: Always
           resources:
