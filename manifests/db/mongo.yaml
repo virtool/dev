@@ -120,35 +120,14 @@ spec:
           configMap:
             name: mongo-init-script
             defaultMode: 0755
-        - name: data
-          persistentVolumeClaim:
-            claimName: pvc-mongo
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-mongo
-spec:
-  storageClassName: standard
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-mongo
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: standard
-  hostPath:
-    path: /db/mongo
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
 ---
 apiVersion: v1
 kind: Service

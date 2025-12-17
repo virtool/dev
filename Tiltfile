@@ -2,11 +2,9 @@ load('ext://restart_process', 'docker_build_with_restart')
 
 # Configuration
 config.define_string_list("to-edit")
-config.define_bool("persistence")
 
 cfg = config.parse()
 to_edit = cfg.get('to-edit', [])
-persistence = cfg.get('persistence', True)
 
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
 load('ext://uibutton', 'cmd_button', 'location')
@@ -35,17 +33,14 @@ k8s_yaml('manifests/storage.yaml')
 k8s_resource(
     new_name='storage',
     objects=[
-        'pv-mongo', 'pvc-mongo',
-        'pv-postgres', 'pvc-postgres',
-        'pv-redis', 'pvc-redis',
         'pv-virtool', 'pvc-virtool',
     ],
     labels=['data']
 )
 
-k8s_resource("mongo", labels=['data'], resource_deps=['storage'])
-k8s_resource("postgres", labels=['data'], resource_deps=['storage'])
-k8s_resource('redis', labels=['data'], resource_deps=['storage'])
+k8s_resource("mongo", labels=['data'])
+k8s_resource("postgres", labels=['data'])
+k8s_resource('redis', labels=['data'])
 
 if 'migration' in to_edit:
     docker_build('ghcr.io/virtool/migration', '../virtool-migration/')
@@ -198,7 +193,7 @@ k8s_resource(
 k8s_resource(
     'virtool-workflow-create-subtraction',
     labels=["workflows"],
-    new_name="create-subraction",
+    new_name="create-subtraction",
     resource_deps=scaled_job_deps
 )
 
